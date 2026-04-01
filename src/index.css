@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --font-matrix: "Inter", "Roboto", "Courier New", monospace;
+  
+  /* Dynamic themes variables mapped to tailwind config */
+  --color-primary: var(--theme-primary);
+  --color-secondary: var(--theme-secondary);
+  --color-accent: var(--theme-accent);
+  --color-border-theme: var(--theme-border);
+  --color-glow: var(--theme-glow);
+
+  /* Fallbacks for existing variables */
+  --color-matrix: var(--theme-primary, #9D00FF);
+  --color-matrix-dim: var(--theme-accent, #00F0FF);
+  --color-matrix-dark: var(--theme-secondary, #1A002A);
+  --color-neon-pink: #FF00BD;
+}
+
+@layer base {
+  :root {
+    /* Default is Stage 1 */
+    --theme-primary: #cccccc;
+    --theme-secondary: #0a0a0a;
+    --theme-accent: #ffffff;
+    --theme-border: rgba(204, 204, 204, 0.3);
+    --theme-glow: rgba(204, 204, 204, 0.2);
+  }
+
+  .stage-1 {
+    --theme-primary: #cccccc;
+    --theme-secondary: #0a0a0a;
+    --theme-accent: #ffffff;
+    --theme-border: rgba(204, 204, 204, 0.3);
+    --theme-glow: rgba(204, 204, 204, 0.2);
+  }
+
+  .stage-2 {
+    --theme-primary: #e0e0e0;
+    --theme-secondary: #1a1a1a;
+    --theme-accent: #ffffff;
+    --theme-border: rgba(224, 224, 224, 0.5);
+    --theme-glow: rgba(224, 224, 224, 0.4);
+  }
+
+  .stage-3 {
+    --theme-primary: #ffffff;
+    --theme-secondary: #000000;
+    --theme-accent: #ffffff;
+    --theme-border: rgba(255, 255, 255, 0.15);
+    --theme-glow: rgba(255, 255, 255, 0.05);
+  }
+
+  body {
+    @apply bg-secondary text-white font-matrix select-none overflow-hidden transition-colors duration-1000;
+    cursor: url('/src/textures/sprites/cursor.png'), auto;
+  }
+  
+  a, button, [role="button"], .matrix-button {
+    cursor: url('/src/textures/sprites/cursor.png'), pointer !important;
+  }
+
+  .matrix-button {
+    @apply relative border-2 border-primary/50 text-primary px-12 py-7 uppercase font-black transition-all rounded-xs text-xl bg-black/40 backdrop-blur-md;
+    @apply hover:border-primary hover:text-white hover:scale-105 active:scale-95 flex items-center justify-center;
+    box-shadow: 0 0 20px var(--theme-glow);
+  }
+
+  .matrix-button:hover {
+    box-shadow: 0 0 40px var(--theme-primary);
+  }
+}
+
+/* Custom Utilities for Neon Root */
+.neon-border {
+  border: 1px solid var(--matrix-color);
+  box-shadow: 0 0 15px var(--matrix-color), inset 0 0 10px var(--matrix-color-dark);
+}
+
+.cyan-glow {
+  text-shadow: 0 0 10px var(--matrix-color-dim);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
