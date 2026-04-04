@@ -399,7 +399,10 @@ export const StartMenu = () => {
     const cleanupMenu = audioManager.menu();
     const cleanupRain = audioManager.rain();
     
-    // Cinematic Intro Strike: 1.3 seconds after entry
+    const { isRestarting, setIsRestarting } = useGameStore.getState();
+    const delay = isRestarting ? 100 : 1300;
+
+    // Cinematic Intro Strike: After entry
     const introStrike = setTimeout(() => {
       if (triggerStrike.current) {
         triggerStrike.current();
@@ -407,8 +410,11 @@ export const StartMenu = () => {
         setStrikeCount(prev => prev + 1);
         setIsShaking(true);
         setTimeout(() => setIsShaking(false), 600);
+        
+        // Reset flag after use
+        if (isRestarting) setIsRestarting(false);
 
-        // SECONDARY STRIKE: Discharge on button (5.3s total after intro strike)
+        // SECONDARY STRIKE: Discharge on button (5s total after intro strike)
         setTimeout(() => {
            // Calculate button center
            const w = window.innerWidth;
@@ -426,9 +432,9 @@ export const StartMenu = () => {
 
            // Start decay immediately after peak impact
            setTimeout(() => setIsButtonCharged(false), 100);
-        }, 5300);
+        }, 5000);
       }
-    }, 1300);
+    }, delay);
 
     return () => {
       cleanupMenu && cleanupMenu();
@@ -612,6 +618,11 @@ export const StartMenu = () => {
           </div>
         </motion.div>
       </motion.div>
+
+      {/* Version Label */}
+      <div className="absolute bottom-6 left-8 z-50 pointer-events-none">
+        <span className="text-[10px] text-white/20 font-bold uppercase tracking-[0.4em]">Current version V0.5.4</span>
+      </div>
 
       {/* Decorative Grid Floor */}
       <div className="absolute bottom-0 w-full h-[30%] opacity-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.1)), repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 41px)', transform: 'perspective(500px) rotateX(60deg) translateY(50px)', transformOrigin: 'bottom' }} />

@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useGameStore, Screen } from '@/core/store';
 import { useI18n } from '@/core/i18n';
+import { SkipButton } from '@/components/SkipButton';
 
 // Avatars
 // @ts-ignore
@@ -35,6 +36,10 @@ export const PostHackSequence = () => {
   const [phase, setPhase] = useState<number>(1);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [typingIndicator, setTypingIndicator] = useState<string | null>(null);
+
+  const speedValue = useMotionValue(120);
+  const speedText = useTransform(speedValue, (latest) => Math.round(latest).toString());
+  const needleRotation = useTransform(speedValue, [0, 260], [-110, 110]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevMsgCountRef = useRef(0);
@@ -82,11 +87,19 @@ export const PostHackSequence = () => {
         const typingAudio = new Audio(typingSfx);
         typingAudio.loop = true;
         typingAudio.volume = 0.3;
+        
+        let activeDangerAudio: HTMLAudioElement | null = null;
 
-        for (const line of CHAT_DD) {
+        // Ensure clean start
+        setChatMessages([]);
+
+        const script = CHAT_DD;
+
+        for (const line of script) {
           if (isCancelled) return;
           await new Promise(r => setTimeout(r, line.waitBefore));
           if (isCancelled) return;
+          
           setTypingIndicator(t('story.typing', { name: line.author }));
 
           typingAudio.play().catch(() => { });
@@ -98,9 +111,11 @@ export const PostHackSequence = () => {
           setChatMessages(prev => [...prev, { id: msgId++, author: line.author, avatar: line.avatar, text: line.text, isThreat: line.isThreat }]);
 
           if (line.isThreat) {
-            const dangerAudio = new Audio(dangerSfx);
-            dangerAudio.volume = 0.4;
-            dangerAudio.play().catch(() => { });
+            if (!activeDangerAudio || activeDangerAudio.ended) {
+              activeDangerAudio = new Audio(dangerSfx);
+              activeDangerAudio.volume = 0.4;
+              activeDangerAudio.play().catch(() => {});
+            }
           }
         }
         await new Promise(r => setTimeout(r, 3000));
@@ -126,10 +141,13 @@ export const PostHackSequence = () => {
         typingAudio.loop = true;
         typingAudio.volume = 0.3;
 
-        for (const line of CHAT_FRIEND) {
+        const script = CHAT_FRIEND;
+
+        for (const line of script) {
           if (isCancelled) return;
           await new Promise(r => setTimeout(r, line.waitBefore));
           if (isCancelled) return;
+          
           setTypingIndicator(line.author === t('story.me') ? t('story.sending') : t('story.typing', { name: line.author }));
 
           typingAudio.play().catch(() => { });
@@ -140,7 +158,7 @@ export const PostHackSequence = () => {
           setTypingIndicator(null);
           setChatMessages(prev => [...prev, { id: msgId++, author: line.author, avatar: line.avatar, text: line.text }]);
         }
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 3000));
         if (!isCancelled) setPhase(4);
       };
       runFriendSequence();
@@ -150,17 +168,26 @@ export const PostHackSequence = () => {
     // Phase 4: Escaping Car Audio + Red Flashes (5 seconds total)
     if (phase === 4) {
       const carAudio = new Audio(carSfx);
-      carAudio.volume = 0.5; // 50% volume per user request
+      carAudio.volume = 0.5;
       carAudio.play().catch(() => { });
+
+      const controls = animate(speedValue, [120, 260, 180], {
+        duration: 2.5,
+        repeat: Infinity,
+        ease: "easeInOut",
+        times: [0, 0.8, 1]
+      });
 
       const timer = setTimeout(() => {
         carAudio.pause();
+        controls.stop();
         setPhase(5);
       }, 5000);
 
       return () => {
         clearTimeout(timer);
         carAudio.pause();
+        controls.stop();
       };
     }
 
@@ -171,7 +198,9 @@ export const PostHackSequence = () => {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [phase, CHAT_DD, CHAT_FRIEND, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, setScreen]); 
+
 
   const renderContent = () => {
     switch (phase) {
@@ -260,18 +289,98 @@ export const PostHackSequence = () => {
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black z-50 flex items-center justify-center"
+            className="absolute inset-0 bg-black z-50 flex flex-col items-center justify-center p-8"
           >
+            {/* Speedometer during phase 4 */}
+            <AnimatePresence>
+              {phase === 4 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.2 }}
+                  className="relative z-10 mb-12"
+                >
+                  <motion.div
+                    animate={{
+                      x: [0, -1, 1, -1, 0],
+                      y: [0, 1, -1, 1, 0],
+                      rotate: [0, -0.5, 0.5, 0]
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 0.15,
+                    }}
+                    className="w-72 h-72 relative border-4 border-zinc-700/80 rounded-full flex items-center justify-center bg-zinc-950 shadow-[inset_0_0_60px_rgba(0,0,0,1),0_0_80px_rgba(0,0,0,0.6)] overflow-hidden"
+                  >
+                     {/* Dashboard glow */}
+                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(239,68,68,0.15)_0%,transparent_70%)]" />
+
+                     {/* Dial Ticks using SVGs */}
+                     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                        <g>
+                           {/* Create ticks ranging from -110 to 110 degrees */}
+                           {Array.from({length: 23}).map((_, i) => {
+                              const deg = -110 + (i * 10);
+                              const isMajor = i % 2 === 0;
+                              return (
+                                <line
+                                  key={i}
+                                  x1="50" y1="50" x2="50" y2={isMajor ? "10" : "15"}
+                                  stroke={deg > 70 ? "rgba(239, 68, 68, 0.8)" : "rgba(255, 255, 255, 0.4)"} 
+                                  strokeWidth={isMajor ? "1.5" : "0.5"}
+                                  transform={`rotate(${deg} 50 50)`}
+                                />
+                              )
+                           })}
+                        </g>
+                     </svg>
+
+                     {/* Numbers */}
+                     <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                        <span className="absolute text-xs text-white/50 font-bold" style={{ transform: 'translate(-85px, 30px)' }}>0</span>
+                        <span className="absolute text-xs text-white/50 font-bold" style={{ transform: 'translate(-55px, -60px)' }}>80</span>
+                        <span className="absolute text-xs text-white/50 font-bold" style={{ transform: 'translate(55px, -60px)' }}>160</span>
+                        <span className="absolute text-xs text-red-500/80 font-bold" style={{ transform: 'translate(85px, 30px)' }}>240</span>
+                     </div>
+
+                     {/* Center Cap */}
+                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-zinc-800 border-[3px] border-zinc-600 rounded-full shadow-lg z-20" />
+                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 rounded-full z-30" />
+                     
+                     {/* Speedometer Needle */}
+                     <motion.div 
+                        className="w-[4px] h-[115px] bg-red-500 rounded-t-full origin-bottom absolute bottom-1/2 left-1/2 -translate-x-1/2 shadow-[0_0_15px_rgba(239,68,68,1)] z-10"
+                        style={{ rotate: needleRotation }}
+                     />
+
+                     <div className="absolute bottom-16 text-[11px] text-zinc-500 uppercase tracking-[0.4em] font-black italic">
+                        KM/H
+                     </div>
+                     <div className="absolute bottom-6 flex items-baseline gap-1 font-mono">
+                        {/* Digital speed readout */}
+                        <motion.span 
+                          className="text-3xl font-black bg-clip-text text-transparent bg-linear-to-b from-white to-zinc-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                          animate={{ opacity: [1, 0.9, 1] }}
+                          transition={{ repeat: Infinity, duration: 0.1 }}
+                        >
+                          {speedText}
+                        </motion.span>
+                     </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Red Flash Interval Overlay during phase 4 */}
             <AnimatePresence>
               {phase === 4 && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{
-                    opacity: [0, 0.4, 0],
+                    opacity: [0, 0.45, 0],
                   }}
                   transition={{ repeat: Infinity, duration: 0.5, ease: "easeInOut", repeatDelay: 2.0 }} // Active flash + 2s rest = 2.5s interval
-                  className="absolute inset-0 bg-red-600 pointer-events-none"
+                  className="absolute inset-0 bg-red-900 pointer-events-none mix-blend-overlay"
                 />
               )}
             </AnimatePresence>
@@ -288,6 +397,7 @@ export const PostHackSequence = () => {
       <AnimatePresence mode="wait">
         {renderContent()}
       </AnimatePresence>
+      <SkipButton onSkip={() => setScreen(Screen.DEFENSE_GAME)} />
     </div>
   );
 };

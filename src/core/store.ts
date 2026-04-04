@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useChatStore } from './useChatStore';
 
 export enum Screen {
   LANGUAGE_SELECT = 'LANGUAGE_SELECT',
@@ -89,6 +90,10 @@ interface GameState {
 
   language: 'en' | 'ru' | null;
   setLanguage: (lang: 'en' | 'ru') => void;
+  isRestarting: boolean;
+  setIsRestarting: (v: boolean) => void;
+  hasCompleted: boolean;
+  setHasCompleted: (v: boolean) => void;
   resetGame: () => void;
 }
 
@@ -148,10 +153,20 @@ export const useGameStore = create<GameState>((set) => ({
     });
   },
 
-  resetGame: () => set({
-    screen: Screen.START,
-    evolution: 1,
-    friendChatOpen: false,
-    currentPath: '~',
-  }),
+  isRestarting: false,
+  setIsRestarting: (isRestarting) => set({ isRestarting }),
+  hasCompleted: localStorage.getItem('pc_master_completed') === 'true',
+  setHasCompleted: (hasCompleted: boolean) => {
+    localStorage.setItem('pc_master_completed', String(hasCompleted));
+    set({ hasCompleted });
+  },
+  resetGame: () => {
+    useChatStore.getState().resetAll();
+    set({
+      screen: Screen.START,
+      evolution: 1,
+      friendChatOpen: false,
+      currentPath: '~',
+    });
+  },
 }));

@@ -11,12 +11,40 @@ export const UpdateLogsModal = memo(() => {
 
 const LOGS = language === 'en' ? [
   {
-    version: '0.5.2',
+    version: '0.5.4',
     date: 'logs.current_version',
+    title: 'ENDGAME FIXES & CREDITS',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Updated ending credits sequence and development timeline.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed a critical bug making the final boss unclickable / ending impassable.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.5.3',
+    date: '2026-04-04',
+    title: 'MINOR FIXES & APOCALYPSE EFFECTS',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added Windows system error cascade and Matrix speedup during the apocalypse sequence.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added explosion particle effects when destroying viruses in defense mode.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Implemented a massive central HP bar at the bottom of the HUD.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed an issue where danger warning audio overlapped itself.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed a bug where subtitles would not disappear during defense prep phase.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed invisible hitboxes, making them clearly shown to the player.</li>
+        </ul>
+    ),
+    type: 'previous'
+  },
+  {
+    version: '0.5.2',
+    date: '2026-04-02',
     title: 'CHAPTER 2: FINALE — FULL VERSION',
     content: (
         <ul className="list-none space-y-2 mt-2">
-            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added the final mini-game "AVALON DEFENSE" — 10 waves of sector defense against Digital Dreams.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added the final mini-game "AVALON DEFENSE" — 5 waves of sector defense against Digital Dreams.</li>
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Implemented final boss DD_CORE_ARCHITECT with vulnerability windows.</li>
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added cinematic post-hack sequence: DD Security Team chat → friend panic → car escape.</li>
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Implemented victory chat with friend and final credits "Chapter 2: Neon Root — COMPLETED".</li>
@@ -27,7 +55,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Defense game loop performance optimization (requestAnimationFrame).</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.5.1',
@@ -101,12 +129,40 @@ const LOGS = language === 'en' ? [
   }
 ] : [
   {
-    version: '0.5.2',
+    version: '0.5.4',
     date: 'logs.current_version',
+    title: 'ENDGAME ИСПРАВЛЕНИЯ & ТИТРЫ',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Обновлены финальные титры и время разработки.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлен баг из-за которого сервер не нажимался концовка была непроходима.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.5.3',
+    date: '2026-04-04',
+    title: 'MINOR FIXES & APOCALYPSE EFFECTS',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлен каскад системных окон Windows и ускорение Матрицы во время апокалипсиса.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлены эффекты взрыва частиц при уничтожении вирусов в защите.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Большая центральная шкала здоровья перемещена вниз экрана HUD.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлена ошибка, из-за которой звук опасности многократно накладывался сам на себя.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлен баг, из-за которого субтитры не исчезали перед началом волны.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлены невидимые хитбоксы, теперь они ярко подсвечиваются.</li>
+        </ul>
+    ),
+    type: 'previous'
+  },
+  {
+    version: '0.5.2',
+    date: '2026-04-02',
     title: 'CHAPTER 2: FINALE — ПОЛНАЯ ВЕРСИЯ',
     content: (
         <ul className="list-none space-y-2 mt-2">
-            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлена финальная мини-игра «AVALON DEFENSE» — 10 волн защиты секторов от атак Digital Dreams.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлена финальная мини-игра «AVALON DEFENSE» — 5 волн защиты секторов от атак Digital Dreams.</li>
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Реализован финальный босс DD_CORE_ARCHITECT с системой уязвимостей и окнами для нанесения урона.</li>
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлена кинематографическая пост-хак последовательность: чат DD Security Team → паника друга → побег на машине.</li>
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Реализованы победный чат с другом и финальные титры «Глава 2: Neon Root — ЗАВЕРШЕНА».</li>
@@ -117,7 +173,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Оптимизация производительности игрового цикла обороны (requestAnimationFrame).</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.5.1',
@@ -252,7 +308,7 @@ const LOGS = language === 'en' ? [
 
         <footer className="mt-8 shrink-0 flex items-center justify-between py-4 border-t border-white/5">
            <div className="text-[10px] text-white/20 uppercase tracking-[0.4em]">
-             Authorized_Access_Only [v0.5.1]
+             Authorized_Access_Only [v5.1.3]
            </div>
            <button onClick={closeModal} className="px-8 py-2 border border-white/10 hover:border-white/40 text-[10px] uppercase tracking-[0.6em] transition-all">
              {t('logs.btn_close')}

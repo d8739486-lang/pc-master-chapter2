@@ -7,6 +7,7 @@ import { create } from 'zustand';
 
 export interface IChatMessage {
   id: string;
+  senderId?: 'hero' | 'friend' | 'dd' | 'system';
   author: string;
   text: string;
   type: 'normal' | 'threat' | 'system';

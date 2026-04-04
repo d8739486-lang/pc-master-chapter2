@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useGameStore, Screen } from '@/core/store';
 import { useI18n } from '@/core/i18n';
+import { AssetManager } from '@/core/AssetManager';
 
 export const Preloader = () => {
   const { setScreen } = useGameStore();
@@ -11,35 +12,30 @@ export const Preloader = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
-    if (!hasInteracted) return; // Wait for initial click to comply with browser policy
+    if (!hasInteracted) return; 
 
     let isMounted = true;
     
     const loadAssets = async () => {
-      const totalSteps = 100;
-      for (let i = 0; i <= totalSteps; i++) {
-        if (!isMounted) return;
-        
-        setProgress(i);
-        
-        if (i === 15) setStatusText(t('preloader.connecting'));
-        if (i === 40) setStatusText(t('preloader.bypassing'));
-        if (i === 70) setStatusText(t('preloader.loading_cinematics'));
-        if (i === 90) setStatusText(t('preloader.syncing'));
-        
-        let waitTime = 10 + Math.random() * 20; 
-        if (i === 15 || i === 40 || i === 70 || i === 90) {
-           waitTime = 300 + Math.random() * 500;
-        } else if (Math.random() > 0.95) {
-           waitTime = 100 + Math.random() * 200;
-        }
-
-        await new Promise(r => setTimeout(r, waitTime));
+      setStatusText(t('preloader.connecting'));
+      try {
+        await AssetManager.loadAll((p) => {
+          if (!isMounted) return;
+          const displayProgress = Math.floor(p);
+          setProgress(displayProgress);
+          
+          if (displayProgress > 10 && displayProgress < 50) setStatusText(t('preloader.bypassing'));
+          if (displayProgress >= 50 && displayProgress < 80) setStatusText(t('preloader.loading_cinematics'));
+          if (displayProgress >= 80) setStatusText(t('preloader.syncing'));
+        });
+      } catch (e) {
+        console.warn("Asset preload incomplete", e);
       }
-
+      
       if (isMounted) {
+        setProgress(100);
         setStatusText(t('preloader.secured'));
-        await new Promise(r => setTimeout(r, 800));
+        await new Promise(r => setTimeout(r, 600));
         setScreen(Screen.START);
       }
     };

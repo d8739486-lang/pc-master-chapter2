@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import { useGameStore, Screen } from '@/core/store';
 import { MatrixRain } from '@/components/MatrixRain';
 import { Power } from 'lucide-react';
@@ -8,6 +9,12 @@ import { useI18n } from '@/core/i18n';
 export const LanguageSelect = () => {
   const { setScreen, setLanguage } = useGameStore();
   const { t } = useI18n();
+
+  useEffect(() => {
+    import('@/core/audio').then(({ audioManager }) => {
+      audioManager.menuShow();
+    });
+  }, []);
 
   const handleSelect = (lang: 'en' | 'ru') => {
     setLanguage(lang);

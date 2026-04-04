@@ -22,206 +22,265 @@ import dangerSfx from '@/textures/sfx/main/danger.mp3';
 // @ts-ignore
 import messageSfx from '@/textures/sfx/main/message.mp3';
 // @ts-ignore
-import cmdTSfx from '@/textures/sfx/main/cmdT.mp3';
-// @ts-ignore
 import cmdLSfx from '@/textures/sfx/main/cmdL.mp3';
 // @ts-ignore
+import cmdTSfx from '@/textures/sfx/main/cmdT.mp3';
+// @ts-ignore
 import loseSfx from '@/textures/sfx/main/lose.mp3';
+// @ts-ignore
+import damageSfx from '@/textures/sfx/main/damage.mp3';
 
-let currentAmbient: HTMLAudioElement | null = null;
-
-// Import Music
 // @ts-ignore
 import menuMusic from '@/textures/soundtracks/menu.mp3';
 // @ts-ignore
 import gameMusic from '@/textures/soundtracks/game.mp3';
+// @ts-ignore
+import defendMusic from '@/textures/soundtracks/defend.mp3';
+// @ts-ignore
+import wthSfx from '@/textures/soundtracks/WTH.mp3';
 
-let currentMusic: HTMLAudioElement | null = null;
+export let audioCtx: AudioContext | null = null;
+const audioBuffers: Map<string, AudioBuffer> = new Map();
+let masterGain: GainNode | null = null;
+let sfxGain: GainNode | null = null;
+let musicGain: GainNode | null = null;
+let ambientGain: GainNode | null = null;
+
+let currentMusicSource: AudioBufferSourceNode | null = null;
 let currentMusicPath: string | null = null;
+let currentAmbientSource: AudioBufferSourceNode | null = null;
+const activeLoops: Map<string, { source: AudioBufferSourceNode, gain: GainNode }> = new Map();
 
-/** Named audio loops (breathing, etc.) tracked for stop/cleanup */
-const activeLoops: Map<string, HTMLAudioElement> = new Map();
+let fadeOutTimeout: number | null = null;
 
-/**
- * Centralized Audio Controller
- * Handles SFX, Music, and Loop playback with volume scaling.
- */
 export const audioManager = {
+  initialize: async (onProgress?: (p: number) => void) => {
+    try {
+      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      audioCtx = new AudioCtxClass();
+
+      masterGain = audioCtx.createGain();
+      sfxGain = audioCtx.createGain();
+      musicGain = audioCtx.createGain();
+      ambientGain = audioCtx.createGain();
+
+      sfxGain.connect(masterGain);
+      musicGain.connect(masterGain);
+      ambientGain.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
+
+      const state = useGameStore.getState();
+      masterGain.gain.value = state.masterVolume;
+      sfxGain.gain.value = state.sfxVolume;
+      musicGain.gain.value = state.musicVolume;
+      ambientGain.gain.value = Math.max(0, state.sfxVolume * 0.56);
+
+      useGameStore.subscribe((newState) => {
+        if (!audioCtx) return;
+        if (masterGain) masterGain.gain.setTargetAtTime(newState.masterVolume, audioCtx.currentTime, 0.1);
+        if (sfxGain) sfxGain.gain.setTargetAtTime(newState.sfxVolume, audioCtx.currentTime, 0.1);
+        if (musicGain) musicGain.gain.setTargetAtTime(newState.musicVolume, audioCtx.currentTime, 0.1);
+        if (ambientGain) ambientGain.gain.setTargetAtTime(Math.max(0, newState.sfxVolume * 0.56), audioCtx.currentTime, 0.1);
+      });
+
+      const assets = [
+        clickSfx, menuShowSfx, chatInSfx, chatOutSfx, rainSfx, 
+        thunderSfx, thunderSmallSfx, deleteSfx, dangerSfx, 
+        messageSfx, cmdLSfx, cmdTSfx, loseSfx, damageSfx, 
+        menuMusic, gameMusic, defendMusic, wthSfx
+      ];
+
+      let loaded = 0;
+      const promises = assets.map(async (url) => {
+        try {
+          if (!audioBuffers.has(url)) {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtx!.decodeAudioData(arrayBuffer);
+            audioBuffers.set(url, audioBuffer);
+          }
+        } catch (e) {
+          console.error(`Failed to preload audio: ${url}`, e);
+        } finally {
+          loaded++;
+          if (onProgress) onProgress((loaded / assets.length) * 100);
+        }
+      });
+
+      await Promise.all(promises);
+
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+    } catch (e) {
+      console.error("Audio Context Init Error", e);
+    }
+  },
+
   playSfx: (path: string, volumeScale: number = 1) => {
-    const { masterVolume, sfxVolume } = useGameStore.getState();
-    const sfx = new Audio(path);
-    sfx.volume = masterVolume * sfxVolume * volumeScale;
-    sfx.play().catch(() => {});
-    return sfx;
+    if (!audioCtx || !sfxGain) return null;
+    const buffer = audioBuffers.get(path);
+    if (!buffer) return null;
+
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+
+    if (volumeScale !== 1) {
+      const localGain = audioCtx.createGain();
+      localGain.gain.value = volumeScale;
+      source.connect(localGain);
+      localGain.connect(sfxGain);
+    } else {
+      source.connect(sfxGain);
+    }
+    
+    source.start();
+    return source;
   },
 
   playMusic: (path: string, loop: boolean = true) => {
-    // Guard: don't restart if same track is already playing
-    if (currentMusicPath === path && currentMusic && !currentMusic.paused) return;
+    if (!audioCtx || !musicGain) return;
     
-    if (currentMusic) {
-      currentMusic.pause();
-      currentMusic.src = '';
+    if (currentMusicPath === path && currentMusicSource) return;
+
+    if (currentMusicSource) {
+      try { currentMusicSource.stop(); currentMusicSource.disconnect(); } catch (e) {}
     }
 
-    const { masterVolume, musicVolume } = useGameStore.getState();
-    const music = new Audio(path);
-    music.loop = loop;
-    // Music is now 15% louder overall, and menu music is baseline 1.0 instead of 0.85
-    const volScale = path.includes('menu') ? 1.0 : 1.15;
-    music.volume = masterVolume * musicVolume * volScale;
-    music.play().catch(() => {
-        // Fallback for autoplay blocks
-        const startMusic = () => {
-            music.play().catch(() => {});
-            window.removeEventListener('click', startMusic);
-        };
-        window.addEventListener('click', startMusic);
-    });
+    const buffer = audioBuffers.get(path);
+    if (!buffer) return;
 
-    currentMusic = music;
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = loop;
+
+    const volScale = path.includes('menu') ? 1.0 : 1.15;
+    const localGain = audioCtx.createGain();
+    localGain.gain.value = volScale;
+
+    source.connect(localGain);
+    localGain.connect(musicGain);
+
+    source.start();
+    
+    currentMusicSource = source;
     currentMusicPath = path;
 
-    // Re-check volume on state change
-    const unsub = useGameStore.subscribe((state) => {
-      if (currentMusic) {
-        const currentVolScale = currentMusicPath?.includes('menu') ? 1.0 : 1.15;
-        currentMusic.volume = state.masterVolume * state.musicVolume * currentVolScale;
-      }
-    });
-
     return () => {
-      unsub();
-      music.pause();
-      music.src = '';
+      try { source.stop(); source.disconnect(); } catch (e) {}
       if (currentMusicPath === path) {
-          currentMusic = null;
-          currentMusicPath = null;
+        currentMusicSource = null;
+        currentMusicPath = null;
       }
     };
   },
 
-  /**
-   * Play a looping SFX with a named key for later stopping.
-   * Supports fade-in over `fadeInMs` milliseconds.
-   */
   playLoop: (path: string, key: string, volumeScale: number = 1, fadeInMs: number = 0) => {
-    // Stop existing loop with same key
+    if (!audioCtx || !sfxGain) return;
     audioManager.stopLoop(key);
 
-    const { masterVolume, sfxVolume } = useGameStore.getState();
-    const targetVolume = masterVolume * sfxVolume * volumeScale;
-    const audio = new Audio(path);
-    audio.loop = true;
-    audio.volume = fadeInMs > 0 ? 0 : targetVolume;
-    audio.play().catch(() => {});
+    const buffer = audioBuffers.get(path);
+    if (!buffer) return;
 
-    activeLoops.set(key, audio);
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
 
-    // Fade in
+    const localGain = audioCtx.createGain();
+    localGain.gain.value = fadeInMs > 0 ? 0 : volumeScale;
+
+    source.connect(localGain);
+    localGain.connect(sfxGain);
+    
+    source.start();
+    activeLoops.set(key, { source, gain: localGain });
+
     if (fadeInMs > 0) {
-      const steps = 20;
-      const stepTime = fadeInMs / steps;
-      let currentStep = 0;
-      const fadeInterval = setInterval(() => {
-        currentStep++;
-        audio.volume = Math.min(targetVolume, (currentStep / steps) * targetVolume);
-        if (currentStep >= steps) clearInterval(fadeInterval);
-      }, stepTime);
+      localGain.gain.setTargetAtTime(volumeScale, audioCtx.currentTime, fadeInMs / 1000);
     }
   },
 
-  /**
-   * Stop a named loop, optionally with fade-out.
-   */
   stopLoop: (key: string, fadeOutMs: number = 0) => {
-    const audio = activeLoops.get(key);
-    if (!audio) return;
+    if (!audioCtx) return;
+    const loop = activeLoops.get(key);
+    if (!loop) return;
 
     if (fadeOutMs > 0) {
-      const initialVolume = audio.volume;
-      const steps = 20;
-      const stepTime = fadeOutMs / steps;
-      let currentStep = 0;
-      const fadeInterval = setInterval(() => {
-        currentStep++;
-        audio.volume = Math.max(0, initialVolume * (1 - currentStep / steps));
-        if (currentStep >= steps) {
-          clearInterval(fadeInterval);
-          audio.pause();
-          audio.src = '';
-          activeLoops.delete(key);
-        }
-      }, stepTime);
+      loop.gain.gain.setTargetAtTime(0, audioCtx.currentTime, fadeOutMs / 1000);
+      window.setTimeout(() => {
+        try { loop.source.stop(); loop.source.disconnect(); } catch (e) {}
+      }, fadeOutMs);
     } else {
-      audio.pause();
-      audio.src = '';
-      activeLoops.delete(key);
+      try { loop.source.stop(); loop.source.disconnect(); } catch (e) {}
     }
+    activeLoops.delete(key);
   },
 
-  /** Stop all active loops */
   stopAllLoops: () => {
     for (const key of Array.from(activeLoops.keys())) {
       audioManager.stopLoop(key);
     }
-    if (currentAmbient) {
-      currentAmbient.pause();
-      currentAmbient.src = '';
-      currentAmbient = null;
+    if (currentAmbientSource) {
+      try { currentAmbientSource.stop(); currentAmbientSource.disconnect(); } catch (e) {}
+      currentAmbientSource = null;
     }
   },
 
-  /** Stop the current background music immediately */
   stopMusic: () => {
-    if (currentMusic) {
-      currentMusic.pause();
-      currentMusic.src = '';
-      currentMusic = null;
+    if (currentMusicSource) {
+      try { currentMusicSource.stop(); currentMusicSource.disconnect(); } catch (e) {}
+      currentMusicSource = null;
       currentMusicPath = null;
     }
   },
 
-  // Named SFX helpers
   click: () => audioManager.playSfx(clickSfx),
   chat: (isOpen: boolean) => audioManager.playSfx(isOpen ? chatInSfx : chatOutSfx),
   menuShow: () => audioManager.playSfx(menuShowSfx),
   delete: () => audioManager.playSfx(deleteSfx, 0.8),
   message: () => audioManager.playSfx(messageSfx, 0.5),
   cmdT: () => audioManager.playSfx(cmdTSfx, 0.6),
-  cmdL: () => audioManager.playSfx(cmdLSfx, 0.6), // 20% quieter than previous 0.8
+  cmdL: () => audioManager.playSfx(cmdLSfx, 0.6),
   lose: () => audioManager.playSfx(loseSfx, 1.0),
+  damage: () => audioManager.playSfx(damageSfx, 1.0),
+  destroy: () => audioManager.playSfx(deleteSfx, 1.2), 
+  wth: () => audioManager.playSfx(wthSfx, 1.2),
 
-  /** Danger SFX loop — starts with fade-in */
   dangerStart: (fadeInMs: number = 2000) => {
+    if (activeLoops.has('danger')) return;
     audioManager.playLoop(dangerSfx, 'danger', 0.8, fadeInMs);
   },
 
-  /** Danger SFX loop — stops */
   dangerStop: (fadeOutMs: number = 0) => {
     audioManager.stopLoop('danger', fadeOutMs);
   },
 
-
-  // Named Music helpers
   menu: () => audioManager.playMusic(menuMusic),
   game: () => audioManager.playMusic(gameMusic),
+  defend: () => audioManager.playMusic(defendMusic),
   
   rain: () => {
-    if (currentAmbient) {
-      currentAmbient.pause();
-      currentAmbient.src = '';
+    if (!audioCtx || !ambientGain) return () => {};
+    if (currentAmbientSource) {
+      try { currentAmbientSource.stop(); currentAmbientSource.disconnect(); } catch (e) {}
+      currentAmbientSource = null;
     }
-    const { masterVolume, sfxVolume } = useGameStore.getState();
-    const rain = new Audio(rainSfx);
-    rain.loop = true;
-    rain.volume = masterVolume * sfxVolume * 0.56;
-    rain.play().catch(() => {});
-    currentAmbient = rain;
+
+    const buffer = audioBuffers.get(rainSfx);
+    if (!buffer) return () => {};
+
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    source.connect(ambientGain);
+    source.start();
+    
+    currentAmbientSource = source;
+
     return () => {
-      rain.pause();
-      rain.src = '';
-      if (currentAmbient === rain) currentAmbient = null;
+      try { source.stop(); source.disconnect(); } catch (e) {}
+      if (currentAmbientSource === source) currentAmbientSource = null;
     };
   },
   
@@ -234,33 +293,27 @@ export const audioManager = {
   },
 
   fadeOut: (duration: number = 2000) => {
-    const step = 50;
-    const iterations = duration / step;
+    if (!audioCtx) return;
     
-    const elements = [currentMusic, currentAmbient].filter(Boolean) as HTMLAudioElement[];
-    if (elements.length === 0) return;
+    if (currentMusicSource && musicGain) {
+      musicGain.gain.setTargetAtTime(0, audioCtx.currentTime, duration / 1000);
+    }
+    if (currentAmbientSource && ambientGain) {
+      ambientGain.gain.setTargetAtTime(0, audioCtx.currentTime, duration / 1000);
+    }
 
-    const initialVolumes = elements.map(el => el.volume);
-    let currentIteration = 0;
-
-    const interval = setInterval(() => {
-      currentIteration++;
-      const progress = currentIteration / iterations;
-      
-      elements.forEach((el, i) => {
-        el.volume = Math.max(0, initialVolumes[i] * (1 - progress));
-      });
-
-      if (currentIteration >= iterations) {
-        clearInterval(interval);
-        elements.forEach(el => {
-          el.pause();
-          el.src = '';
-        });
-        currentMusic = null;
+    if (fadeOutTimeout) window.clearTimeout(fadeOutTimeout);
+    
+    fadeOutTimeout = window.setTimeout(() => {
+      if (currentMusicSource) {
+        try { currentMusicSource.stop(); currentMusicSource.disconnect(); } catch(e){}
+        currentMusicSource = null;
         currentMusicPath = null;
-        currentAmbient = null;
       }
-    }, step);
+      if (currentAmbientSource) {
+        try { currentAmbientSource.stop(); currentAmbientSource.disconnect(); } catch(e){}
+        currentAmbientSource = null;
+      }
+    }, duration);
   }
 };

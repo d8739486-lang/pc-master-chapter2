@@ -53,11 +53,10 @@
 
   body {
     @apply bg-secondary text-white font-matrix select-none overflow-hidden transition-colors duration-1000;
-    cursor: url('/src/textures/sprites/cursor.png'), auto;
   }
   
   a, button, [role="button"], .matrix-button {
-    cursor: url('/src/textures/sprites/cursor.png'), pointer !important;
+    @apply cursor-pointer;
   }
 
   .matrix-button {

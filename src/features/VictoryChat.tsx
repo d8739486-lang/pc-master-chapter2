@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, Screen } from '@/core/store';
 import { useI18n } from '@/core/i18n';
+import { SkipButton } from '@/components/SkipButton';
 
 // Avatars
 // @ts-ignore
@@ -120,6 +121,7 @@ export const VictoryChat = () => {
           <div ref={messagesEndRef} className="h-4 shrink-0" />
         </div>
       </motion.div>
+      <SkipButton onSkip={() => setScreen(Screen.ENDING)} />
     </div>
   );
 };

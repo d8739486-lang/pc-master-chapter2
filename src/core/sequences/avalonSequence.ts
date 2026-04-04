@@ -135,9 +135,9 @@ export const startAvalonPart2 = (
     }
   });
 
-  // 50% -> 99%
-  for (let i = 51; i <= 99; i++) {
-    const delay = ((i - 50) / 49) * 10000; // 10 seconds to 99%
+  // 50% -> 100%
+  for (let i = 51; i <= 100; i++) {
+    const delay = ((i - 50) / 50) * 10000; // 10 seconds to 100%
     const jitter = Math.random() * 100;
     events.push({
       id: `p2_progress_${i}`,
@@ -146,13 +146,11 @@ export const startAvalonPart2 = (
     });
   }
 
-  // 99% -> Archives copied! Escaping phase
+  // 100% -> Archives copied! Escaping phase
   events.push({
     id: 'p2_escape_prompt',
     delay: 11000,
     action: () => {
-      addTerminalLine({ type: 'success', content: t('avalon.p2_archive') });
-      addTerminalLine({ type: 'error', content: t('avalon.p2_time') }); 
       addTerminalLine({ type: 'system', content: t('avalon.p2_run') });
       
       const chat = useChatStore.getState();

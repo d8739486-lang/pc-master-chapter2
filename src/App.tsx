@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <>
-      <div className="h-screen w-screen flex flex-col max-w-full overflow-hidden bg-black select-none text-white font-mono min-w-0">
+      <div onContextMenu={(e) => e.preventDefault()} className="h-screen w-screen flex flex-col max-w-full overflow-hidden bg-black select-none text-white font-mono min-w-0">
         <AnimatePresence mode="wait">
           {screen === Screen.LANGUAGE_SELECT && (
             <motion.div

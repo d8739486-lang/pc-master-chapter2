@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { audioManager } from '@/core/audio';
 
 export interface ISector {
   id: number;
@@ -34,7 +35,9 @@ interface IDefenseState {
   phase: DefensePhase;
   wave: number;
   score: number;
-  waveTimer: number;
+  enemiesTotal: number;
+  enemiesKilled: number;
+  prepCountdown: number;
   sectors: ISector[];
   attacks: IAttack[];
   bossHp: number;
@@ -47,7 +50,9 @@ interface IDefenseState {
 
   setPhase: (phase: DefensePhase) => void;
   setWave: (wave: number) => void;
-  setWaveTimer: (t: number) => void;
+  setEnemiesTotal: (n: number) => void;
+  setEnemiesKilled: (n: number) => void;
+  setPrepCountdown: (n: number) => void;
   addScore: (pts: number) => void;
   setSectors: (sectors: ISector[]) => void;
   damageSector: (sectorId: number, dmg: number) => void;
@@ -68,46 +73,33 @@ interface IDefenseState {
 
 const INITIAL_SECTORS: ISector[] = [
   { id: 1, name: 'ALPHA', hp: 100, maxHp: 100, active: false },
-  { id: 2, name: 'BETA', hp: 100, maxHp: 100, active: false },
-  { id: 3, name: 'GAMMA', hp: 100, maxHp: 100, active: false },
-  { id: 4, name: 'DELTA', hp: 100, maxHp: 100, active: false },
-  { id: 5, name: 'EPSILON', hp: 100, maxHp: 100, active: false },
-  { id: 6, name: 'OMEGA', hp: 100, maxHp: 100, active: false },
 ];
 
 /** Which sectors are active on each wave */
 export const WAVE_SECTOR_MAP: Record<number, number[]> = {
   1: [1],
   2: [1],
-  3: [1, 2],
-  4: [1, 2],
-  5: [1, 2, 3],
-  6: [1, 2, 3],
-  7: [1, 2, 3, 4],
-  8: [1, 2, 3, 4],
-  9: [1, 2, 3, 4, 5],
-  10: [1, 2, 3, 4, 5, 6],
+  3: [1],
+  4: [1],
+  5: [1],
 };
 
 /** Wave config: spawnInterval (ms), attackCount, attackSpeed, combatDuration (s) */
 export const WAVE_CONFIG: Record<number, { spawnInterval: number; attackCount: number; speed: number; combatDuration: number }> = {
-  1:  { spawnInterval: 2000, attackCount: 5,  speed: 0.005, combatDuration: 20 },
-  2:  { spawnInterval: 1800, attackCount: 7,  speed: 0.006, combatDuration: 22 },
-  3:  { spawnInterval: 1600, attackCount: 10, speed: 0.007, combatDuration: 25 },
-  4:  { spawnInterval: 1400, attackCount: 12, speed: 0.007, combatDuration: 28 },
-  5:  { spawnInterval: 1200, attackCount: 15, speed: 0.008, combatDuration: 30 },
-  6:  { spawnInterval: 1100, attackCount: 18, speed: 0.009, combatDuration: 35 },
-  7:  { spawnInterval: 1000, attackCount: 22, speed: 0.010, combatDuration: 40 },
-  8:  { spawnInterval: 900,  attackCount: 25, speed: 0.011, combatDuration: 45 },
-  9:  { spawnInterval: 800,  attackCount: 28, speed: 0.012, combatDuration: 50 },
-  10: { spawnInterval: 700,  attackCount: 32, speed: 0.012, combatDuration: 60 },
+  1:  { spawnInterval: 2500, attackCount: 5,  speed: 0.003, combatDuration: 20 },
+  2:  { spawnInterval: 2000, attackCount: 10, speed: 0.0035, combatDuration: 25 },
+  3:  { spawnInterval: 1800, attackCount: 15, speed: 0.004, combatDuration: 30 },
+  4:  { spawnInterval: 1400, attackCount: 22, speed: 0.005, combatDuration: 35 },
+  5:  { spawnInterval: 1000,  attackCount: 10, speed: 0.006, combatDuration: 45 },
 };
 
 export const useDefenseStore = create<IDefenseState>((set, get) => ({
   phase: 'intro',
   wave: 0,
   score: 0,
-  waveTimer: 0,
+  enemiesTotal: 0,
+  enemiesKilled: 0,
+  prepCountdown: 3,
   sectors: INITIAL_SECTORS.map(s => ({ ...s })),
   attacks: [],
   bossHp: 100,
@@ -120,7 +112,9 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
 
   setPhase: (phase) => set({ phase }),
   setWave: (wave) => set({ wave }),
-  setWaveTimer: (waveTimer) => set({ waveTimer }),
+  setEnemiesTotal: (enemiesTotal) => set({ enemiesTotal }),
+  setEnemiesKilled: (enemiesKilled) => set({ enemiesKilled }),
+  setPrepCountdown: (prepCountdown) => set({ prepCountdown }),
   addScore: (pts) => set(s => ({ score: s.score + pts })),
   setSectors: (sectors) => set({ sectors }),
 
@@ -129,7 +123,13 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
       sec.id === sectorId ? { ...sec, hp: Math.max(0, sec.hp - dmg) } : sec
     );
     const anyDead = sectors.some(sec => sec.active && sec.hp <= 0);
-    return { sectors, phase: anyDead ? 'defeat' : s.phase };
+    // When sector takes damage from an attack reaching it, that enemy is "resolved"
+    const isCombat = s.phase === 'combat';
+    return { 
+      sectors, 
+      phase: anyDead ? 'defeat' : s.phase,
+      enemiesKilled: isCombat ? s.enemiesKilled + 1 : s.enemiesKilled
+    };
   }),
 
   spawnAttack: (attack) => set(s => ({
@@ -139,6 +139,7 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
 
   removeAttack: (id) => set(s => ({
     attacks: s.attacks.filter(a => a.id !== id),
+    enemiesKilled: s.phase === 'combat' ? s.enemiesKilled + 1 : s.enemiesKilled
   })),
 
   advanceAttacks: (dt) => {
@@ -151,6 +152,7 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
       if (newProgress >= 1) {
         // Attack reached sector
         toRemove.push(atk.id);
+        audioManager.damage();
         state.damageSector(atk.targetSectorId, 12);
       } else {
         updated.push({ ...atk, progress: newProgress });
@@ -188,7 +190,9 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
     phase: 'intro',
     wave: 0,
     score: 0,
-    waveTimer: 0,
+    enemiesTotal: 0,
+    enemiesKilled: 0,
+    prepCountdown: 3,
     sectors: INITIAL_SECTORS.map(s => ({ ...s })),
     attacks: [],
     bossHp: 100,

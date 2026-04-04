@@ -1,6 +1,7 @@
+import { useCallback } from 'react';
 import { useGameStore } from './store';
 
-const translations = {
+export const translations = {
   ru: {
     menu: {
       start: 'ЗАПУСТИТЬ ROOT',
@@ -58,12 +59,16 @@ const translations = {
       connected: "Соединение установлено",
       
       script1: [
-        "ОБНАРУЖЕНА КРИТИЧЕСКАЯ УЯЗВИМОСТЬ В ЯДРЕ!",
-        "КТО ЭТО?! ОТКУДА ОНИ ВЗЯЛИСЬ?!",
-        "Они проходят через протоколы Avalon... наш же код против нас!",
-        "Связь обрывается... мы теряем контроль над узлами!",
-        "Цель идентифицирована... СКАНИРОВАНИЕ...",
-        "МЫ НАШЛИ ТЕБЯ!"
+        "Кто-нибудь залил вчерашний билд на прод?", // 0: Oleg
+        "Я его еще тестирую, там критический баг с БД.", // 1: Anna
+        "Ребята, у нас какой-то странный трафик на 8080 порту...", // 2: Max
+        "ОБНАРУЖЕНА КРИТИЧЕСКАЯ УЯЗВИМОСТЬ В ЯДРЕ!", // 3: Bot
+        "ЧТО? КТО ПРОБРАЛСЯ В НАШУ СИСТЕМУ ЗАЩИТЫ!", // 4: Max
+        "Они проходят через протоколы Avalon... наш же код против нас!", // 5: Oleg
+        "Они скачивают архивы! Включаю протокол изоляции, БЫСТРО!", // 6: Anna
+        "ИСТОЧНИК УТЕЧКИ ОБНАРУЖЕН. СИСТЕМА ЛОКАЛИЗАЦИИ АКТИВНА.", // 7: Bot
+        "Блокируй порты! Мы должны запереть его в системе!", // 8: Max
+        "ЦЕЛЬ ИДЕНТИФИЦИРОВАНА. ИНИЦИАЦИЯ ЗАХВАТА... 3... 2... 1..." // 9: Bot
       ],
       script2: [
         "Здарова. Ты не поверишь, что эти ублюдки из Digital Dreams выкинули на этот раз.",
@@ -173,6 +178,7 @@ const translations = {
       defeat_title: 'СЕКТОР УНИЧТОЖЕН',
       defeat_subtitle: 'Digital Dreams победили...',
       restart: '[ ПЕРЕЗАПУСК ]',
+      subtitle_msg: '- Я запустил маленькие скрипты-захватчики на наш сервер для очистки мусора DD. Их нужно отбить назад!',
     },
     victory_chat: {
       mission_complete: 'МИССИЯ ЗАВЕРШЕНА',
@@ -192,9 +198,11 @@ const translations = {
       completed: '— Завершена —',
       thanks: 'Спасибо за прохождение второй главы.',
       final_text: 'Digital Dreams повержены. Код Avalon возвращён своим создателям. Свобода отвоёвана — но история на этом не заканчивается...',
-      creator: 'Создатель',
-      dev: 'Дизайн & Разработка',
-      to_be_continued: 'продолжение следует...',
+      creator: 'Давит',
+      studio: 'L3n4r studio',
+      duration: 'Разработка: 7 дней',
+      to_be_continued: 'Это еще не конец...',
+      skip: 'ПРОПУСТИТЬ >>',
     },
     lang_select: {
       title: 'CHOOSE PROTOCOL // ВЫБЕРИТЕ ПРОТОКОЛ',
@@ -315,12 +323,16 @@ const translations = {
       connected: "Connection established",
       
       script1: [
-        "CRITICAL VULNERABILITY DETECTED IN CORE!",
-        "WHO IS THIS?! WHERE DID THEY COME FROM?!",
-        "They are passing through Avalon protocols... our own code against us!",
-        "Connection drops... we are losing control over nodes!",
-        "Target identified... SCANNING...",
-        "WE FOUND YOU!"
+        "Did anyone push yesterday's build to prod?", // 0: Oleg
+        "I'm still testing it, there's a critical DB bug.", // 1: Anna
+        "Guys, we have some weird traffic on port 8080...", // 2: Max
+        "CRITICAL CORE VULNERABILITY DETECTED!", // 3: Bot
+        "WHAT? WHO PENETRATED OUR DEFENSE SYSTEM!", // 4: Max
+        "They are passing through Avalon protocols... our own code against us!", // 5: Oleg
+        "They are downloading archives! Turn on isolation protocol, FAST!", // 6: Anna
+        "LEAK SOURCE DETECTED. LOCALIZATION SYSTEM ACTIVE.", // 7: Bot
+        "Block the ports! We must lock them in the system!", // 8: Max
+        "TARGET IDENTIFIED. INITIATING CAPTURE... 3... 2... 1..." // 9: Bot
       ],
       script2: [
         "Hey. You won't believe what those bastards at Digital Dreams pulled this time.",
@@ -430,6 +442,7 @@ const translations = {
       defeat_title: 'SECTOR DESTROYED',
       defeat_subtitle: 'Digital Dreams won...',
       restart: '[ RESTART ]',
+      subtitle_msg: '- I threw small invader scripts onto our server to clean up DD junk. You need to repel them!',
     },
     victory_chat: {
       mission_complete: 'MISSION COMPLETE',
@@ -449,9 +462,11 @@ const translations = {
       completed: '— Completed —',
       thanks: 'Thank you for playing Chapter 2.',
       final_text: 'Digital Dreams are defeated. Avalon core code is back with its creators. Freedom is reclaimed — but the story is not over yet...',
-      creator: 'Creator',
-      dev: 'Design & Development',
-      to_be_continued: 'to be continued...',
+      creator: 'Davit',
+      studio: 'L3n4r studio',
+      duration: 'Development: 7 Days',
+      to_be_continued: 'It\'s not over yet...',
+      skip: 'SKIP >>',
     },
     lang_select: {
       title: 'CHOOSE PROTOCOL',
@@ -537,9 +552,9 @@ export const getTranslation = (path: string, params?: Record<string, any>) => {
 export const useI18n = () => {
   const language = useGameStore(state => state.language) || 'ru';
   
-  const t = (path: string, params?: Record<string, any>) => {
+  const t = useCallback((path: string, params?: Record<string, any>) => {
     const keys = path.split('.');
-    let result: any = translations[language];
+    let result: any = translations[language as keyof typeof translations];
     for (const key of keys) {
       if (result) result = result[key];
     }
@@ -551,7 +566,7 @@ export const useI18n = () => {
       });
     }
     return text;
-  };
+  }, [language]);
 
   return { t, language };
 };
