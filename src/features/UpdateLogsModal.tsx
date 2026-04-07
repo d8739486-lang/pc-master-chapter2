@@ -11,8 +11,20 @@ export const UpdateLogsModal = memo(() => {
 
 const LOGS = language === 'en' ? [
   {
-    version: '0.5.4',
+    version: '0.1.7',
     date: 'logs.current_version',
+    title: 'TERMINAL MINI-GAMES',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added 5 interactive terminal mini-games during hacking.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> All story loading sequences now feature manual override challenges.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.1.6',
+    date: '2026-04-06',
     title: 'ENDGAME FIXES & CREDITS',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -20,10 +32,10 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed a critical bug making the final boss unclickable / ending impassable.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
-    version: '0.5.3',
+    version: '0.1.5',
     date: '2026-04-04',
     title: 'MINOR FIXES & APOCALYPSE EFFECTS',
     content: (
@@ -39,7 +51,7 @@ const LOGS = language === 'en' ? [
     type: 'previous'
   },
   {
-    version: '0.5.2',
+    version: '0.1.4',
     date: '2026-04-02',
     title: 'CHAPTER 2: FINALE — FULL VERSION',
     content: (
@@ -58,7 +70,7 @@ const LOGS = language === 'en' ? [
     type: 'previous'
   },
   {
-    version: '0.5.1',
+    version: '0.1.3',
     date: '2026-03-31',
     title: 'STORY EXPANSION & POLISH',
     content: (
@@ -75,7 +87,7 @@ const LOGS = language === 'en' ? [
     type: 'previous'
   },
   {
-    version: '0.4.7',
+    version: '0.1.2',
     date: 'BETA UPDATE',
     title: 'CINEMATICS & LORE',
     content: (
@@ -89,7 +101,7 @@ const LOGS = language === 'en' ? [
     type: 'beta'
   },
   {
-    version: '0.3.5',
+    version: '0.1.1',
     date: 'DEMO RELEASE',
     title: 'INTERFACE PRO',
     content: (
@@ -129,8 +141,20 @@ const LOGS = language === 'en' ? [
   }
 ] : [
   {
-    version: '0.5.4',
+    version: '0.1.7',
     date: 'logs.current_version',
+    title: 'ТЕРМИНАЛЬНЫЕ МИНИ-ИГРЫ',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлено 5 интерактивных мини-игр при взломе.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Все сюжетные загрузки теперь содержат испытания для ручного обхода.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.1.6',
+    date: '2026-04-06',
     title: 'ENDGAME ИСПРАВЛЕНИЯ & ТИТРЫ',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -138,10 +162,10 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлен баг из-за которого сервер не нажимался концовка была непроходима.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
-    version: '0.5.3',
+    version: '0.1.5',
     date: '2026-04-04',
     title: 'MINOR FIXES & APOCALYPSE EFFECTS',
     content: (
@@ -157,7 +181,7 @@ const LOGS = language === 'en' ? [
     type: 'previous'
   },
   {
-    version: '0.5.2',
+    version: '0.1.4',
     date: '2026-04-02',
     title: 'CHAPTER 2: FINALE — ПОЛНАЯ ВЕРСИЯ',
     content: (
@@ -176,7 +200,7 @@ const LOGS = language === 'en' ? [
     type: 'previous'
   },
   {
-    version: '0.5.1',
+    version: '0.1.3',
     date: '2026-03-31',
     title: 'STORY EXPANSION & POLISH',
     content: (
@@ -193,7 +217,7 @@ const LOGS = language === 'en' ? [
     type: 'previous'
   },
   {
-    version: '0.4.7',
+    version: '0.1.2',
     date: 'BETA UPDATE',
     title: 'CINEMATICS & LORE',
     content: (
@@ -207,7 +231,7 @@ const LOGS = language === 'en' ? [
     type: 'beta'
   },
   {
-    version: '0.3.5',
+    version: '0.1.1',
     date: 'DEMO RELEASE',
     title: 'INTERFACE PRO',
     content: (
@@ -308,7 +332,7 @@ const LOGS = language === 'en' ? [
 
         <footer className="mt-8 shrink-0 flex items-center justify-between py-4 border-t border-white/5">
            <div className="text-[10px] text-white/20 uppercase tracking-[0.4em]">
-             Authorized_Access_Only [v5.1.3]
+             Authorized_Access_Only [v0.1.7]
            </div>
            <button onClick={closeModal} className="px-8 py-2 border border-white/10 hover:border-white/40 text-[10px] uppercase tracking-[0.6em] transition-all">
              {t('logs.btn_close')}

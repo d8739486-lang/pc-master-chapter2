@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Terminal as TerminalIcon } from 'lucide-react';
 import { Terminal } from '@/features/Terminal';
 import { GameChat } from '@/features/GameChat';
+import { FriendNotifications } from '@/features/FriendNotifications';
 import { ThreatDisplay } from '@/features/ThreatDisplay';
 import { useChatStore } from '@/core/useChatStore';
 import { useTerminalGameStore } from './Terminal/useTerminalGameStore';
@@ -194,6 +195,7 @@ export const GameView = () => {
 
       {/* ═══ CHAT (rendered outside blur scope) ═══ */}
       <GameChat />
+      <FriendNotifications />
       <ThreatDisplay />
 
       {/* ═══ GAME OVER OVERLAY ═══ */}

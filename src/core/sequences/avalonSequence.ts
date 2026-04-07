@@ -4,6 +4,7 @@ import { useUiStore } from '@/core/useUiStore';
 import { useChatStore } from '@/core/useChatStore';
 import { audioManager } from '@/core/audio';
 import { getTranslation as t } from '@/core/i18n';
+import { useTerminalGameStore } from '@/features/Terminal/useTerminalGameStore';
 
 /**
  * Avalon Penetration Sequence — 6-phase deterministic timeline.
@@ -135,9 +136,9 @@ export const startAvalonPart2 = (
     }
   });
 
-  // 50% -> 100%
-  for (let i = 51; i <= 100; i++) {
-    const delay = ((i - 50) / 50) * 10000; // 10 seconds to 100%
+  // 50% -> 75%
+  for (let i = 51; i <= 75; i++) {
+    const delay = ((i - 50) / 50) * 10000; // up to 5 seconds
     const jitter = Math.random() * 100;
     events.push({
       id: `p2_progress_${i}`,
@@ -146,24 +147,43 @@ export const startAvalonPart2 = (
     });
   }
 
-  // 100% -> Archives copied! Escaping phase
+  // At 75%, pause and trigger PULSE task
   events.push({
-    id: 'p2_escape_prompt',
-    delay: 11000,
+    id: 'p2_pause_pulse',
+    delay: 5200,
     action: () => {
-      addTerminalLine({ type: 'system', content: t('avalon.p2_run') });
+      const { setActiveTask, setLoading: setTermLoading } = useTerminalGameStore.getState();
       
-      const chat = useChatStore.getState();
-      chat.addMessage({
-        author: t('chat.friend_name'),
-        text: t('avalon.f_msg4'),
-        type: 'normal'
-      });
-      chat.incrementUnread();
-      audioManager.message();
-      audioManager.dangerStart(2000); // 15s danger sounds - Fades in
-      
-      onComplete(); // Tells the terminal to start the 15s countdown
+      const resumeLoading = () => {
+        let dlProgress = 75;
+        const resumeInterval = setInterval(() => {
+          dlProgress += 5;
+          setTermLoading(dlProgress, 'ESCALATING PRIVILEGES...');
+          audioManager.cmdL(); 
+          
+          if (dlProgress >= 100) {
+            clearInterval(resumeInterval);
+            setTimeout(() => {
+              // 100% -> Archives copied! Escaping phase
+              addTerminalLine({ type: 'system', content: t('avalon.p2_run') });
+              
+              const chat = useChatStore.getState();
+              chat.addMessage({
+                author: t('chat.friend_name'),
+                text: t('avalon.f_msg4'),
+                type: 'normal'
+              });
+              chat.incrementUnread();
+              audioManager.message();
+              audioManager.dangerStart(2000); // 15s danger sounds - Fades in
+              
+              onComplete(); // Tells the terminal to start the 15s countdown
+            }, 1000);
+          }
+        }, 600);
+      };
+
+      setActiveTask('PULSE', resumeLoading);
     }
   });
 

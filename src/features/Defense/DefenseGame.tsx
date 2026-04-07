@@ -62,7 +62,7 @@ export const DefenseGame = () => {
     const updatedSectors = useDefenseStore.getState().sectors.map(s => ({
       ...s,
       active: activeSectorIds.includes(s.id),
-      hp: s.maxHp 
+      hp: Math.min(s.maxHp, s.hp + s.maxHp * 0.2) 
     }));
     setSectors(updatedSectors);
 

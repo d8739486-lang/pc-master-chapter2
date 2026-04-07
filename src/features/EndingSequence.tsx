@@ -91,7 +91,7 @@ export const EndingSequence = () => {
                transition={{ delay: 1, duration: 2 }}
                className="h-px bg-linear-to-r from-transparent via-emerald-500/50 to-transparent mt-8 mb-4 max-w-xl self-center" 
             />
-            <h2 className="text-xl md:text-2xl font-medium text-emerald-400 uppercase tracking-[0.8em] opacity-80">
+            <h2 className="text-xl md:text-2xl font-medium text-emerald-400 uppercase tracking-[0.8em] opacity-80 mt-4">
               {t('ending.chapter_name')}
             </h2>
           </motion.div>
@@ -127,7 +127,6 @@ export const EndingSequence = () => {
           >
              {creditItem("LEAD DEVELOPER", "ДАВИД")}
              {creditItem("STUDIO", t('ending.studio'))}
-             {creditItem("TIMELINE", t('ending.duration'))}
           </motion.div>
         )}
 
@@ -140,20 +139,18 @@ export const EndingSequence = () => {
             transition={{ duration: 3, type: 'spring', stiffness: 50, damping: 20 }}
             className="flex flex-col items-center text-center z-10"
           >
-            <p className="text-white font-mono text-3xl md:text-5xl font-black uppercase tracking-[0.2em] drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+            <p className="text-red-600 font-mono text-3xl md:text-5xl font-black uppercase tracking-[0.2em] drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]">
               {t('ending.to_be_continued')}
             </p>
             <motion.div 
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 1, duration: 4 }}
-              className="mt-8 h-px w-64 bg-emerald-500/50"
+              className="mt-8 h-[2px] w-64 bg-red-600 shadow-[0_0_15px_rgba(239,68,68,0.8)] rounded-full"
             />
           </motion.div>
         )}
       </AnimatePresence>
-
-      <SkipButton onSkip={() => { setHasCompleted(true); resetGame(); setScreen(Screen.START); }} />
 
       {/* Cinematic Overlays */}
       <div className="absolute inset-0 pointer-events-none border-100 border-black/20 z-50 mix-blend-multiply" />

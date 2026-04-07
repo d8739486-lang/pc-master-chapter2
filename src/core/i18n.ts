@@ -205,7 +205,7 @@ export const translations = {
       skip: 'ПРОПУСТИТЬ >>',
     },
     lang_select: {
-      title: 'CHOOSE PROTOCOL // ВЫБЕРИТЕ ПРОТОКОЛ',
+      title: 'CHOOSE LANGUAGE // ВЫБЕРИТЕ ЯЗЫК',
       ru: 'RUSSIAN',
       en: 'ENGLISH',
       footer: 'PC Master: Chapter 2 | Revenge Edition | Handshake'
@@ -258,6 +258,27 @@ export const translations = {
       p2_time: 'ВРЕМЯ НА ОТКЛЮЧЕНИЕ: 15 СЕКУНД.',
       p2_run: 'БЕГИ! ЖМИ [leave_host] ЧТОБЫ ВЫЙТИ ИЗ СЕТИ!',
       f_msg4: 'Отлично! Архивы у нас! НО ОНИ ПЫТАЮТСЯ ЗАПЕРЕТЬ ТЕБЯ В СИСТЕМЕ! Теперь уметайся с сервера пока не засекли! ЖМИ НА "leave_host" БЫСТРО!!'
+    },
+    tasks: {
+      wire_title: 'СОЕДИНЕНИЕ ЦЕПЕЙ',
+      wire_subtitle: 'Соедините провода одинакового цвета',
+      lever_title: 'РУЧНАЯ АКТИВАЦИЯ',
+      lever_subtitle: 'Выставите код и потяните рычаг',
+      sort_title: 'СОРТИРОВКА ДАННЫХ',
+      sort_subtitle: 'Перетащите пакеты в нужные ячейки',
+      grid_title: 'НЕЙРОСЕТЕВАЯ АУТЕНТИФИКАЦИЯ',
+      grid_subtitle: 'Повторите последовательность узлов по памяти',
+      signal_title: 'КВАНТОВАЯ СИНХРОНИЗАЦИЯ',
+      signal_subtitle: 'Настройте частоту и амплитуду',
+      pulse_title: 'ПЕРЕХВАТ ЯДРА',
+      pulse_subtitle: 'Синхронизируйте пульс в целевых зонах',
+      connections: 'СОЕДИНЕНО',
+      sorted: 'ОТСОРТИРОВАНО',
+      complete: 'ЗАДАНИЕ ВЫПОЛНЕНО',
+      bypassed: 'АВТО-ОБХОД',
+      target_code: 'КОД ЦЕЛИ:',
+      lever_ready: 'ГОТОВ К АКТИВАЦИИ',
+      lever_locked: 'КОД НЕ СОВПАДАЕТ',
     },
     logs: {
       header: 'История обновлений',
@@ -469,7 +490,7 @@ export const translations = {
       skip: 'SKIP >>',
     },
     lang_select: {
-      title: 'CHOOSE PROTOCOL',
+      title: 'CHOOSE LANGUAGE',
       ru: 'RUSSIAN',
       en: 'ENGLISH',
       footer: 'PC Master: Chapter 2 | Revenge Edition | Handshake'
@@ -522,6 +543,27 @@ export const translations = {
       p2_time: 'TIME UNTIL DISCONNECT: 15 SECONDS.',
       p2_run: 'RUN! HIT [leave_host] TO DISCONNECT FROM THE GRID!',
       f_msg4: 'Great! We have the archives! BUT THEY ARE TRYING TO LOCK YOU IN THE SYSTEM! Now get out of the server before they track you! HIT "leave_host" QUICKLY!!'
+    },
+    tasks: {
+      wire_title: 'CIRCUIT CONNECTION',
+      wire_subtitle: 'Connect wires of matching colors',
+      lever_title: 'MANUAL ACTIVATION',
+      lever_subtitle: 'Set the code and pull the lever',
+      sort_title: 'DATA SORTING',
+      sort_subtitle: 'Drag packets to matching slots',
+      grid_title: 'NEURAL AUTHENTICATION',
+      grid_subtitle: 'Repeat the node sequence from memory',
+      signal_title: 'QUANTUM SYNCHRONIZATION',
+      signal_subtitle: 'Adjust frequency and amplitude',
+      pulse_title: 'KERNEL OVERRIDE',
+      pulse_subtitle: 'Sync the pulse inside the target zones',
+      connections: 'CONNECTED',
+      sorted: 'SORTED',
+      complete: 'TASK COMPLETE',
+      bypassed: 'AUTO-BYPASS',
+      target_code: 'TARGET CODE:',
+      lever_ready: 'READY TO ACTIVATE',
+      lever_locked: 'CODE MISMATCH',
     },
     logs: {
       header: 'Update Logs',

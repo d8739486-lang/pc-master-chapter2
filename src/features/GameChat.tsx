@@ -4,7 +4,7 @@ import { MessageSquare, X, Users, Shield } from 'lucide-react';
 import { useI18n } from '@/core/i18n';
 
 /**
- * In-game chat panel — top-right corner.
+ * In-game chat panel — bottom-left corner.
  * DD threats and friend messages in tab-based UI.
  * Chat icon sits at bottom-left with unread badge.
  */

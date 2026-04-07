@@ -29,6 +29,18 @@ import cmdTSfx from '@/textures/sfx/main/cmdT.mp3';
 import loseSfx from '@/textures/sfx/main/lose.mp3';
 // @ts-ignore
 import damageSfx from '@/textures/sfx/main/damage.mp3';
+// @ts-ignore
+import leverSfx from '@/textures/sfx/main/lever.mp3';
+// @ts-ignore
+import leverMSfx from '@/textures/sfx/main/leverM.mp3';
+// @ts-ignore
+import completeSfx from '@/textures/sfx/main/complete.mp3';
+// @ts-ignore
+import elINSfx from '@/textures/sfx/main/elIN.mp3';
+// @ts-ignore
+import elPICKSfx from '@/textures/sfx/main/elPICK.mp3';
+// @ts-ignore
+import elDROPSfx from '@/textures/sfx/main/elDROP.mp3';
 
 // @ts-ignore
 import menuMusic from '@/textures/soundtracks/menu.mp3';
@@ -41,6 +53,7 @@ import wthSfx from '@/textures/soundtracks/WTH.mp3';
 
 export let audioCtx: AudioContext | null = null;
 const audioBuffers: Map<string, AudioBuffer> = new Map();
+let damagePlayed = false;
 let masterGain: GainNode | null = null;
 let sfxGain: GainNode | null = null;
 let musicGain: GainNode | null = null;
@@ -87,6 +100,8 @@ export const audioManager = {
         clickSfx, menuShowSfx, chatInSfx, chatOutSfx, rainSfx, 
         thunderSfx, thunderSmallSfx, deleteSfx, dangerSfx, 
         messageSfx, cmdLSfx, cmdTSfx, loseSfx, damageSfx, 
+        leverSfx, leverMSfx, completeSfx,
+        elINSfx, elPICKSfx, elDROPSfx,
         menuMusic, gameMusic, defendMusic, wthSfx
       ];
 
@@ -234,6 +249,44 @@ export const audioManager = {
     }
   },
 
+  // --- Synthetic 8-bit Audio Generators ---
+  playSynth: (type: OscillatorType, freq: number, duration: number, vol: number = 0.5) => {
+    if (!audioCtx || !sfxGain) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    osc.connect(gain);
+    gain.connect(sfxGain);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  },
+
+  gridNote: (index: number) => {
+    // C major pentatonic scale approx frequencies + offset
+    const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99]; 
+    const freq = scale[index % scale.length];
+    audioManager.playSynth('square', freq, 0.15, 0.3);
+  },
+
+  signalTick: () => {
+    audioManager.playSynth('sawtooth', 880, 0.05, 0.1);
+  },
+
+  pulseTick: () => {
+    audioManager.playSynth('square', 1200, 0.1, 0.4);
+    setTimeout(() => {
+      audioManager.playSynth('square', 1600, 0.1, 0.4);
+    }, 50);
+  },
+  // ----------------------------------------
+
   click: () => audioManager.playSfx(clickSfx),
   chat: (isOpen: boolean) => audioManager.playSfx(isOpen ? chatInSfx : chatOutSfx),
   menuShow: () => audioManager.playSfx(menuShowSfx),
@@ -242,9 +295,35 @@ export const audioManager = {
   cmdT: () => audioManager.playSfx(cmdTSfx, 0.6),
   cmdL: () => audioManager.playSfx(cmdLSfx, 0.6),
   lose: () => audioManager.playSfx(loseSfx, 1.0),
-  damage: () => audioManager.playSfx(damageSfx, 1.0),
+  damage: () => {
+    if (!damagePlayed) {
+      audioManager.playSfx(damageSfx, 1.0);
+      damagePlayed = true;
+    }
+  },
   destroy: () => audioManager.playSfx(deleteSfx, 1.2), 
   wth: () => audioManager.playSfx(wthSfx, 1.2),
+  unbuy: () => {
+    // Synthetic 8-bit error sound (Foolproof fallback)
+    audioManager.playSynth('sawtooth', 120, 0.3, 0.4);
+    setTimeout(() => audioManager.playSynth('sawtooth', 80, 0.2, 0.4), 100);
+  },
+  lOFF: () => {
+    // Heavy switch/relay sound
+    audioManager.playSynth('square', 60, 0.4, 0.1);
+    setTimeout(() => audioManager.playSynth('sine', 40, 0.2, 0.3), 50);
+  },
+  spark: () => {
+    // High-pitched electric discharge (8-bit spark)
+    audioManager.playSynth('sawtooth', 800, 0.3, 0.1);
+    setTimeout(() => audioManager.playSynth('sawtooth', 400, 0.2, 0.2), 50);
+  },
+  lever: () => audioManager.playSfx(leverSfx, 1.0),
+  leverM: () => audioManager.playSfx(leverMSfx, 1.0),
+  complete: () => audioManager.playSfx(completeSfx, 1.0),
+  elIN: () => audioManager.playSfx(elINSfx, 1.0),
+  elPICK: () => audioManager.playSfx(elPICKSfx, 1.0),
+  elDROP: () => audioManager.playSfx(elDROPSfx, 1.0),
 
   dangerStart: (fadeInMs: number = 2000) => {
     if (activeLoops.has('danger')) return;
@@ -259,6 +338,15 @@ export const audioManager = {
   game: () => audioManager.playMusic(gameMusic),
   defend: () => audioManager.playMusic(defendMusic),
   
+  stopAll: () => {
+    audioManager.stopMusic();
+    audioManager.stopAllLoops();
+    if (currentAmbientSource) {
+      try { currentAmbientSource.stop(); currentAmbientSource.disconnect(); } catch (e) {}
+      currentAmbientSource = null;
+    }
+  },
+
   rain: () => {
     if (!audioCtx || !ambientGain) return () => {};
     if (currentAmbientSource) {

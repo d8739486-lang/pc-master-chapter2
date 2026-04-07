@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { useChatStore } from './useChatStore';
+export { useChatStore };
 
 export enum Screen {
   LANGUAGE_SELECT = 'LANGUAGE_SELECT',

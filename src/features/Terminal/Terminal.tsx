@@ -7,6 +7,7 @@ import TerminalLineParser from './TerminalLineParser';
 import { TimelineEngine } from '@/core/TimelineEngine';
 import { audioManager } from '@/core/audio';
 import { useI18n } from '@/core/i18n';
+import { TerminalTaskOverlay } from './Tasks/TerminalTaskOverlay';
 
 
 export const Terminal = () => {
@@ -149,6 +150,9 @@ export const Terminal = () => {
            </div>
         </div>
       </div>
+
+      {/* Mini-task overlay (Wire/Lever/Sort puzzles during loading) */}
+      <TerminalTaskOverlay />
 
       <div className="shrink-0 bg-black/98 border-t border-emerald-500/30 z-30 shadow-[0_-10px_30px_rgba(16,185,129,0.05)] px-6 py-4 flex items-center justify-between">
         <div className="flex gap-4 items-center opacity-40">
