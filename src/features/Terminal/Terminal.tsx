@@ -98,40 +98,42 @@ export const Terminal = () => {
         className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-8 space-y-4 scrollbar-hide scroll-smooth relative bg-black/10"
       >
         <div className="flex flex-col justify-end min-h-full pb-10">
-          <div className="space-y-4 max-w-4xl mx-auto w-full overflow-hidden">
+          <div className="space-y-4 max-w-4xl mx-auto w-full overflow-hidden px-4 md:px-10">
              <div className="text-white/20 text-[10px] uppercase tracking-widest border-b border-white/5 pb-2 mb-6 shadow-sm">
                --- {t('terminal.history')} ---
              </div>
              
-             {/* Dynamic rendering of lines */}
-             <AnimatePresence initial={false}>
-                {terminalHistory.map((line, i) => {
-                  return (
-                    <motion.div
-                      key={i} // Using index because we want exact re-renders of history
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className={`flex gap-3 whitespace-pre-wrap wrap-break-word leading-relaxed py-0.5
-                        ${line.type === 'input' ? 'text-emerald-400 font-bold' : ''}
-                        ${line.type === 'output' ? 'text-white/80' : ''}
-                        ${line.type === 'error' ? 'text-red-500/90 font-bold' : ''}
-                        ${line.type === 'success' ? 'text-emerald-300 font-bold drop-shadow-[0_0_5px_rgba(0,255,0,0.4)]' : ''}
-                        ${line.type === 'system' ? 'text-zinc-400 italic font-medium' : ''}
-                      `}
-                    >
-                      <div className="flex-1 align-middle pt-1">
-                        {line.type === 'input' && <span className="opacity-40 mr-2 uppercase tracking-wider text-xs">»</span>}
-                        {/* Parse line content for interactive commands */}
-                        <TerminalLineParser 
-                          text={line.content} 
-                          onCommandClick={executeCommand} 
-                          disabled={isTyping} 
-                        />
-                      </div>
-                    </motion.div>
-                  );
-                })}
-             </AnimatePresence>
+             <div className="flex flex-col gap-4">
+               {/* Dynamic rendering of lines */}
+               <AnimatePresence initial={false}>
+                  {terminalHistory.map((line, i) => {
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`flex gap-3 whitespace-pre-wrap wrap-break-word leading-loose py-1
+                          ${line.type === 'input' ? 'text-emerald-400 font-bold' : ''}
+                          ${line.type === 'output' ? 'text-white font-medium' : ''}
+                          ${line.type === 'error' ? 'text-red-500 font-bold' : ''}
+                          ${line.type === 'success' ? 'text-white font-bold' : ''}
+                          ${line.type === 'system' ? 'text-zinc-300 italic font-medium' : ''}
+                        `}
+                      >
+                        <div className="flex-1 align-middle pt-1">
+                          {line.type === 'input' && <span className="opacity-40 mr-2 uppercase tracking-wider text-xs">»</span>}
+                          {/* Parse line content for interactive commands */}
+                          <TerminalLineParser 
+                            text={line.content} 
+                            onCommandClick={executeCommand} 
+                            disabled={isTyping} 
+                          />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+               </AnimatePresence>
+             </div>
              
              {renderProgressBar()}
 

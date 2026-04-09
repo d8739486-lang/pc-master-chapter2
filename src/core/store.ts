@@ -104,13 +104,17 @@ export const useGameStore = create<GameState>((set) => ({
   
   terminalHistory: [],
   currentPath: '~',
-  addTerminalLine: (line) => set((state) => ({ 
-    terminalHistory: [...state.terminalHistory, line].slice(-100) 
-  })),
+  addTerminalLine: (line) => set({ 
+    terminalHistory: [line] 
+  }),
   clearTerminal: () => set((state) => ({ 
     terminalHistory: [
-      { type: 'system', content: '═══════════════════════════════════════════════════════════════════════════' },
-      { type: 'system', content: state.language === 'en' ? 'Connection established. Secure tunnel active.' : 'Соединение установлено. Защищенный туннель активен.' },
+      { 
+        type: 'system', 
+        content: `═══════════════════════════════════════════════════════════════════════════\n${
+          state.language === 'en' ? 'Connection established. Secure tunnel active.' : 'Соединение установлено. Защищенный туннель активен.'
+        }`
+      }
     ] 
   })),
 
@@ -142,10 +146,15 @@ export const useGameStore = create<GameState>((set) => ({
     set({ 
       language,
       terminalHistory: [
-        { type: 'system', content: '═══════════════════════════════════════════════════════════════════════════' },
-        { type: 'system', content: language === 'en' ? 'Connection established. Secure tunnel active.' : 'Соединение установлено. Защищенный туннель активен.' },
-        { type: 'system', content: language === 'en' ? '## - (friend): We are in. To open the archive, you need to return 5 stolen technologies.' : '## - (друг): Мы на месте. Чтобы открыть архив, нужно вернуть 5 украденных технологий.' },
-        { type: 'system', content: language === 'en' ? '## - (friend): Call the encrypted contact list: [connect list]' : '## - (друг): Вызови зашифрованный список контактов: [connect list]' },
+        { 
+          type: 'system', 
+          content: [
+            '═══════════════════════════════════════════════════════════════════════════',
+            language === 'en' ? 'Connection established. Secure tunnel active.' : 'Соединение установлено. Защищенный туннель активен.',
+            language === 'en' ? '## - (friend): We are in. To open the archive, you need to return 5 stolen technologies.' : '## - (друг): Мы на месте. Чтобы открыть архив, нужно вернуть 5 украденных технологий.',
+            language === 'en' ? '## - (friend): Call the encrypted contact list: [connect list]' : '## - (друг): Вызови зашифрованный список контактов: [connect list]'
+          ].join('\n')
+        }
       ],
       archives: [
         { id: 'avalon_1', name: 'Avalon_Project_V1.txt', content: language === 'en' ? 'Avalon Project was stolen from our repo on 14.05.2025. All signatures erased.' : 'Проект Авалон был украден из нашего репозитория 14.05.2025. Все подписи стерты.', isLocked: true, type: 'text' },

@@ -5,6 +5,7 @@ import { UpdateLogsModal } from '@/features/UpdateLogsModal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MODAL_MAP: Partial<Record<MODAL_TYPES, React.ComponentType<any>>> = {
   [MODAL_TYPES.NETWORK]: () => <div className="p-8 text-cyan-400 font-mono tracking-widest">NETWORK INTERFACE...</div>,

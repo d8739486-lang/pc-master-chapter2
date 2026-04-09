@@ -23,7 +23,7 @@ const TerminalLineParser = ({ text, onCommandClick, disabled }: { text: string; 
               className={`font-black uppercase tracking-wider mx-1 transition-all duration-300 border-b-2 ${
                 disabled
                   ? 'text-white/20 border-white/5 cursor-not-allowed'
-                  : 'text-emerald-500 border-emerald-500/40 hover:text-white hover:border-white cursor-pointer'
+                  : 'text-emerald-400 border-emerald-400/40 hover:text-white hover:border-white cursor-pointer'
               }`}
             >
               {cmd}

@@ -1,5 +1,5 @@
 import { TerminalStep, useTerminalGameStore } from './useTerminalGameStore';
-import { useChatStore, useGameStore, ITerminalLine } from '@/core/store';
+import { useChatStore, useGameStore, ITerminalLine, Screen } from '@/core/store';
 import { useI18n } from '@/core/i18n';
 import { TimelineEngine } from '@/core/TimelineEngine';
 import React from 'react';
@@ -66,11 +66,13 @@ export const useTerminalCommands = (
       }
     }
 
-    addTerminalLine({ type: 'success', content: successMsg });
+    const finalLines = [successMsg];
     if (sectorsToAdd > 0) {
-      addTerminalLine({ type: 'output', content: t('commands.sectors_count', { count: 5 - currentSectors }) });
+      finalLines.push(t('commands.sectors_count', { count: 5 - currentSectors }));
     }
-    addTerminalLine({ type: 'system', content: nextInstruction });
+    finalLines.push(nextInstruction);
+
+    addTerminalLine({ type: 'success', content: finalLines.join('\n') });
   };
 
   const simulateLoading = (
@@ -127,17 +129,14 @@ export const useTerminalCommands = (
     }
 
     if (trimmed === 'help') {
-      addTerminalLine({ type: 'system', content: t('commands.help_title') });
-      addTerminalLine({ type: 'output', content: `- help: ${t('commands.help_desc')}` });
-      addTerminalLine({ type: 'output', content: `- clear: ${t('commands.clear_desc')}` });
-      addTerminalLine({ type: 'output', content: `- status: ${t('commands.status_desc')}` });
+      const helpText = `${t('commands.help_title')}\n- help: ${t('commands.help_desc')}\n- clear: ${t('commands.clear_desc')}\n- status: ${t('commands.status_desc')}`;
+      addTerminalLine({ type: 'output', content: helpText });
       return;
     }
 
     if (trimmed === 'status') {
-      addTerminalLine({ type: 'output', content: `[SYSTEM STATUS]: ${t('commands.status_ok')}` });
-      addTerminalLine({ type: 'output', content: `[DATA SECTORS]: ${hackedSectors}/5` });
-      addTerminalLine({ type: 'output', content: `[BYPASS_ENGINE]: ${t('commands.status_active')}` });
+      const statusText = `[SYSTEM STATUS]: ${t('commands.status_ok')}\n[DATA SECTORS]: ${hackedSectors}/5\n[BYPASS_ENGINE]: ${t('commands.status_active')}`;
+      addTerminalLine({ type: 'output', content: statusText });
       return;
     }
 
@@ -147,12 +146,15 @@ export const useTerminalCommands = (
         if (trimmed === 'connect list') {
           addTerminalLine({ type: 'system', content: t('commands.search_channels') });
           setTimeout(() => {
-            addTerminalLine({ type: 'success', content: t('commands.contacts_found') });
-            addTerminalLine({ type: 'output', content: t('commands.contact_line', { n: 1, name: 'Lumina', type: t('commands.types.routing'), cmd: '[connect lumina]' }) });
-            addTerminalLine({ type: 'output', content: t('commands.contact_line', { n: 2, name: 'Kaelen', type: t('commands.types.keys'), cmd: `[${t('commands.req_hack', { n: 1 })}]` }) });
-            addTerminalLine({ type: 'output', content: t('commands.contact_line', { n: 3, name: 'Vortex', type: t('commands.types.intrusion'), cmd: `[${t('commands.req_hack', { n: 2 })}]` }) });
-            addTerminalLine({ type: 'output', content: t('commands.contact_line', { n: 4, name: 'Cipher', type: t('commands.types.neural'), cmd: `[${t('commands.req_hack', { n: 3 })}]` }) });
-            addTerminalLine({ type: 'output', content: t('commands.contact_line', { n: 5, name: 'Aura', type: t('commands.types.quantum'), cmd: `[${t('commands.req_hack', { n: 4 })}]` }) });
+            const listText = [
+              t('commands.contacts_found'),
+              t('commands.contact_line', { n: 1, name: 'Lumina', type: t('commands.types.routing'), cmd: '[connect lumina]' }),
+              t('commands.contact_line', { n: 2, name: 'Kaelen', type: t('commands.types.keys'), cmd: `[${t('commands.req_hack', { n: 1 })}]` }),
+              t('commands.contact_line', { n: 3, name: 'Vortex', type: t('commands.types.intrusion'), cmd: `[${t('commands.req_hack', { n: 2 })}]` }),
+              t('commands.contact_line', { n: 4, name: 'Cipher', type: t('commands.types.neural'), cmd: `[${t('commands.req_hack', { n: 3 })}]` }),
+              t('commands.contact_line', { n: 5, name: 'Aura', type: t('commands.types.quantum'), cmd: `[${t('commands.req_hack', { n: 4 })}]` })
+            ].join('\n');
+            addTerminalLine({ type: 'output', content: listText });
             useTerminalGameStore.getState().setStep(TerminalStep.CONNECT_LIST);
           }, 1000);
         } else {
@@ -164,13 +166,15 @@ export const useTerminalCommands = (
         if (trimmed === 'connect lumina') {
           addTerminalLine({ type: 'system', content: t('commands.connecting', { name: 'Lumina' }) });
           setTimeout(() => {
-            addTerminalLine({ type: 'output', content: `## - (Lumina): ${t('commands.lumina_msg1')}` });
-            addTerminalLine({ type: 'output', content: `## - (Lumina): ${t('commands.lumina_msg2')}` });
-            addTerminalLine({ type: 'output', content: `>> ${t('commands.lumina_utility')}` });
+            const luminaIntro = [
+                `## - (Lumina): ${t('commands.lumina_msg1')}`,
+                `## - (Lumina): ${t('commands.lumina_msg2')}`,
+                `>> ${t('commands.lumina_utility')}`
+            ].join('\n');
+            addTerminalLine({ type: 'output', content: luminaIntro });
             useTerminalGameStore.getState().setStep(TerminalStep.LUMINA);
           }, 800);
         } else if (trimmed === 'connect kaelen' || trimmed === 'connect vortex' || trimmed === 'connect cipher' || trimmed === 'connect aura') {
-            const targetId = trimmed.split(' ')[1];
             addTerminalLine({ type: 'error', content: t('commands.unavailable') });
         } else {
           addTerminalLine({ type: 'error', content: t('terminal.error_unknown', { cmd: trimmed }) });
@@ -219,8 +223,68 @@ export const useTerminalCommands = (
 
       case TerminalStep.READY_AVALON:
         if (trimmed === 'start_operation') {
-          addTerminalLine({ type: 'system', content: 'INITIALIZING AVALON CORE PENETRATION...' });
+          if (!engineRef.current) engineRef.current = new TimelineEngine();
+          
+          addTerminalLine({ type: 'system', content: t('avalon.p1_init') });
           useTerminalGameStore.getState().setStep(TerminalStep.AVALON_SEQUENCE);
+
+          engineRef.current.queue([
+            { id: 'av1', delay: 1000, action: () => addTerminalLine({ type: 'system', content: t('avalon.p1_conn') }) },
+            { id: 'av2', delay: 2500, action: () => {
+              addTerminalLine({ type: 'error', content: t('avalon.p1_warn1') });
+              audioManager.dangerStart();
+            }},
+            { id: 'av3', delay: 4000, action: () => addTerminalLine({ type: 'error', content: t('avalon.p1_warn2') }) },
+            { id: 'av_chat1', delay: 5500, action: () => {
+              useChatStore.getState().addMessage({ author: t('story.friend'), text: t('avalon.f_msg1'), type: 'normal' });
+              audioManager.message();
+            }},
+            { id: 'av_chat2', delay: 8500, action: () => {
+              useChatStore.getState().addMessage({ author: t('story.friend'), text: t('avalon.f_msg2'), type: 'normal' });
+              audioManager.message();
+              clearTerminal(); // Simulate "window wiped history"
+            }},
+            { id: 'av_chat3', delay: 11500, action: () => {
+              useChatStore.getState().addMessage({ author: t('story.friend'), text: t('avalon.f_msg3'), type: 'normal' });
+              audioManager.message();
+            }},
+            { id: 'av4', delay: 13500, action: () => addTerminalLine({ type: 'system', content: t('avalon.p1_resume') }) },
+            { id: 'av5', delay: 15000, action: () => addTerminalLine({ type: 'success', content: t('avalon.p1_ready') }) },
+          ]);
+        } else {
+          addTerminalLine({ type: 'error', content: t('terminal.error_unknown', { cmd: trimmed }) });
+        }
+        break;
+
+      case TerminalStep.AVALON_SEQUENCE:
+        if (trimmed === 'continue') {
+          if (!engineRef.current) engineRef.current = new TimelineEngine();
+          useTerminalGameStore.getState().setStep(TerminalStep.AVALON_PART_1);
+          
+          addTerminalLine({ type: 'system', content: t('avalon.p2_resume') });
+          
+          engineRef.current.queue([
+            { id: 'av6', delay: 1500, action: () => addTerminalLine({ type: 'success', content: t('avalon.p2_archive') }) },
+            { id: 'av7', delay: 3000, action: () => {
+              addTerminalLine({ type: 'error', content: t('avalon.p2_time') });
+              setEscapeTimer(15);
+            }},
+            { id: 'av_chat4', delay: 4500, action: () => {
+              useChatStore.getState().addMessage({ author: t('story.friend'), text: t('avalon.f_msg4'), type: 'normal' });
+              audioManager.message();
+            }},
+            { id: 'av8', delay: 6000, action: () => addTerminalLine({ type: 'system', content: t('avalon.p2_run') }) },
+          ]);
+        } else {
+          addTerminalLine({ type: 'error', content: t('terminal.error_unknown', { cmd: trimmed }) });
+        }
+        break;
+
+      case TerminalStep.AVALON_PART_1:
+        if (trimmed === 'leave_host') {
+          audioManager.stopAllLoops();
+          audioManager.dangerStop();
+          useGameStore.getState().setScreen(Screen.POST_HACK_SEQUENCE);
         } else {
           addTerminalLine({ type: 'error', content: t('terminal.error_unknown', { cmd: trimmed }) });
         }

@@ -42,8 +42,10 @@ export const startAvalonPart1 = (
     id: 'p1_init',
     delay: 0,
     action: () => {
-      addTerminalLine({ type: 'system', content: t('avalon.p1_init') });
-      addTerminalLine({ type: 'output', content: t('avalon.p1_conn') });
+      addTerminalLine({ 
+        type: 'system', 
+        content: `${t('avalon.p1_init')}\n${t('avalon.p1_conn')}` 
+      });
     },
   });
 
@@ -63,8 +65,10 @@ export const startAvalonPart1 = (
     id: 'p1_pause_dd',
     delay: 8500,
     action: () => {
-      addTerminalLine({ type: 'error', content: t('avalon.p1_warn1') });
-      addTerminalLine({ type: 'error', content: t('avalon.p1_warn2') });
+      addTerminalLine({ 
+        type: 'error', 
+        content: `${t('avalon.p1_warn1')}\n${t('avalon.p1_warn2')}` 
+      });
       
       const { setDdPopupOpen, triggerRedFlash, setDdPopupExploding, triggerShake, setBlur } = useUiStore.getState();
       const { addMessage, incrementUnread } = useChatStore.getState();
@@ -105,8 +109,10 @@ export const startAvalonPart1 = (
         chatStore.incrementUnread();
         chatStore.incrementUnread();
         
-        addTerminalLine({ type: 'system', content: t('avalon.p1_resume') });
-        addTerminalLine({ type: 'output', content: t('avalon.p1_ready') });
+        addTerminalLine({ 
+          type: 'system', 
+          content: `${t('avalon.p1_resume')}\n${t('avalon.p1_ready')}` 
+        });
         
         onPause(); // Allow terminal commands to resume sequence
         

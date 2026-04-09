@@ -621,7 +621,7 @@ export const StartMenu = () => {
 
       {/* Version Label */}
       <div className="absolute bottom-6 left-8 z-50 pointer-events-none">
-        <span className="text-[10px] text-white/20 font-bold uppercase tracking-[0.4em]">Current version V0.1.7</span>
+        <span className="text-[10px] text-white/20 font-bold uppercase tracking-[0.4em]">Current version V0.1.8</span>
       </div>
 
       {/* Decorative Grid Floor */}

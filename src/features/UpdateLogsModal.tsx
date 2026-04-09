@@ -11,8 +11,22 @@ export const UpdateLogsModal = memo(() => {
 
 const LOGS = language === 'en' ? [
   {
-    version: '0.1.7',
+    version: '0.1.8',
     date: 'logs.current_version',
+    title: 'POLISH & REFINEMENT',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Reworked Terminal interface with cleaner text spacing and better readability.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added smooth integration and fixes to the Avalon hacking cinematic timeline.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Implemented final Victory Chat sequence directly after the Defense game.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed plot progression blocker related to [start_operation] command.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.1.7',
+    date: '2026-04-08',
     title: 'TERMINAL MINI-GAMES',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -20,7 +34,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> All story loading sequences now feature manual override challenges.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.1.6',
@@ -91,11 +105,11 @@ const LOGS = language === 'en' ? [
     date: 'BETA UPDATE',
     title: 'CINEMATICS & LORE',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Radically transformed the main menu with a new design.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Implemented a stunning cinematic pre-game cutscene (rain, lightning).</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Added "Story" button detailing Avalon's creation without major spoilers.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[*]</span> Updated background lightning generation script.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Radically transformed the main menu with a new design.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Implemented a stunning cinematic pre-game cutscene (rain, lightning).</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added "Story" button detailing Avalon's creation without major spoilers.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Updated background lightning generation script.</li>
         </ul>
     ),
     type: 'beta'
@@ -105,11 +119,11 @@ const LOGS = language === 'en' ? [
     date: 'DEMO RELEASE',
     title: 'INTERFACE PRO',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Expanded lore, introduced early narrative arcs and text chats.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[*]</span> Global UI update: enhanced files viewing and work console.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Added "Settings" menu with volume controls.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[-]</span> Minor optimizations in terminal command logic.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Expanded lore, introduced early narrative arcs and text chats.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Global UI update: enhanced files viewing and work console.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added "Settings" menu with volume controls.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Minor optimizations in terminal command logic.</li>
         </ul>
     ),
     type: 'demo'
@@ -119,10 +133,10 @@ const LOGS = language === 'en' ? [
     date: 'PRE-ALPHA',
     title: 'INFRASTRUCTURE',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Added core terminal interface rendering.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Implemented command parsing engine.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[*]</span> Synchronized state modules and input handling.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Added core terminal interface rendering.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Implemented command parsing engine.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Synchronized state modules and input handling.</li>
         </ul>
     ),
     type: 'alpha'
@@ -132,17 +146,31 @@ const LOGS = language === 'en' ? [
     date: 'PROTOTYPE',
     title: 'CORE DEV',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Built purely as a Proof of Concept to test architectures.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Defined hacker-thriller concepts, set up Zustand state management.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Built purely as a Proof of Concept to test architectures.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Defined hacker-thriller concepts, set up Zustand state management.</li>
         </ul>
     ),
     type: 'dev'
   }
 ] : [
   {
-    version: '0.1.7',
+    version: '0.1.8',
     date: 'logs.current_version',
+    title: 'ПОЛИРОВКА И УЛУЧШЕНИЯ СЮЖЕТА',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Полностью переработано форматирование терминала для улучшенной читаемости списка контактов.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлена кинематографичная шкала времени взлома ядра Avalon (с сообщениями и таймером).</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Реализован финальный победный чат с союзником после окончания фазы обороны.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлен критический баг не позволяющий продолжить сюжет после команды start_operation.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.1.7',
+    date: '2026-04-08',
     title: 'ТЕРМИНАЛЬНЫЕ МИНИ-ИГРЫ',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -150,7 +178,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Все сюжетные загрузки теперь содержат испытания для ручного обхода.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.1.6',
@@ -221,11 +249,11 @@ const LOGS = language === 'en' ? [
     date: 'BETA UPDATE',
     title: 'CINEMATICS & LORE',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Кардинально переработано главное меню, изменен дизайн.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Внедрена впечатляющая вступительная кат-сцена перед игрой (дождь, молнии).</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Добавлена кнопка "Сюжет" в меню, раскрывающая первоначальный смысл создания Avalon, НО без критических спойлеров.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[*]</span> Обновлена генерация анимаций молний на фоне.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Кардинально переработано главное меню, изменен дизайн.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Внедрена впечатляющая вступительная кат-сцена перед игрой (дождь, молнии).</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлена кнопка "Сюжет" в меню, раскрывающая первоначальный смысл создания Avalon, НО без критических спойлеров.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Обновлена генерация анимаций молний на фоне.</li>
         </ul>
     ),
     type: 'beta'
@@ -235,11 +263,11 @@ const LOGS = language === 'en' ? [
     date: 'DEMO RELEASE',
     title: 'INTERFACE PRO',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Расширен сюжет. Введены начальные арки и текстовые диалоги.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[*]</span> Глобальное обновление UI: улучшено отображение файлов и рабочей консоли.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Добавлено окно "Настройки" (Settings) с ползунками громкости.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[-]</span> Проведены небольшие фиксы логики терминала.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Расширен сюжет. Введены начальные арки и текстовые диалоги.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Глобальное обновление UI: улучшено отображение файлов и рабочей консоли.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Добавлено окно "Настройки" (Settings) с ползунками громкости.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Проведены небольшие фиксы логики терминала.</li>
         </ul>
     ),
     type: 'demo'
@@ -249,10 +277,10 @@ const LOGS = language === 'en' ? [
     date: 'PRE-ALPHA',
     title: 'INFRASTRUCTURE',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Был добавлен базовый интерфейс для терминала.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Реализован парсинг команд внутри консоли.</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[*]</span> Налажено взаимодействие модулей и обработка ввода.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Был добавлен базовый интерфейс для терминала.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Реализован парсинг команд внутри консоли.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Налажено взаимодействие модулей и обработка ввода.</li>
         </ul>
     ),
     type: 'alpha'
@@ -262,9 +290,9 @@ const LOGS = language === 'en' ? [
     date: 'PROTOTYPE',
     title: 'CORE DEV',
     content: (
-        <ul className="list-none space-y-2 mt-2 text-white/50">
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Игра была создана исключительно для проверки конструкции (Proof of Concept).</li>
-            <li><span className="text-white/40 font-bold mr-2 text-xs border border-white/20 px-1 pt-0.5 rounded-[2px] bg-white/5">[+]</span> Утверждена идея хакерского триллера. Разработан стейт-менеджмент.</li>
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Игра была создана исключительно для проверки конструкции (Proof of Concept).</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Утверждена идея хакерского триллера. Разработан стейт-менеджмент.</li>
         </ul>
     ),
     type: 'dev'
@@ -292,47 +320,57 @@ const LOGS = language === 'en' ? [
         </header>
 
         <main className="flex-1 overflow-y-auto scrollbar-hide pr-4 space-y-6">
-          {LOGS.map((log, idx) => (
-            <motion.div
-              key={log.version}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className={`p-6 border-l-2 transition-all duration-500 hover:bg-white/5 relative group ${
-                log.type === 'current' ? 'border-emerald-500 bg-emerald-500/5' : 'border-white/10'
-              }`}
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                <div className="flex items-center gap-4">
-                  <span className={`text-sm font-black px-3 py-1 rounded-sm tracking-wider ${
-                    log.type === 'current' ? 'bg-emerald-500 text-black' : 'bg-white/10 text-white/60'
-                  }`}>
-                    {log.version}
-                  </span>
-                  <div className="flex items-center gap-2 text-white/40 text-[10px] tracking-widest uppercase">
-                    <Calendar className="w-3 h-3" />
-                    {log.date.includes('logs.') ? t(log.date) : log.date}
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold tracking-[0.3em] group-hover:text-white transition-colors">
-                  {log.title}
-                </h3>
-              </div>
-              
-              <div className="text-white/60 text-sm leading-relaxed max-w-3xl border-l border-white/5 pl-4 ml-1">
-                {log.content}
-              </div>
+          {LOGS.map((log, idx) => {
+            const getColorScheme = (type: string) => {
+              switch (type) {
+                case 'current': return { border: 'border-emerald-500', bg: 'bg-emerald-500/10', text: 'text-emerald-400', badge: 'bg-emerald-500 text-black', icon: 'text-emerald-500' };
+                case 'previous': return { border: 'border-sky-500/40', bg: 'bg-sky-500/5', text: 'text-sky-400', badge: 'bg-sky-500/20 text-sky-300', icon: 'text-sky-500/30' };
+                case 'beta': return { border: 'border-amber-500/40', bg: 'bg-amber-500/5', text: 'text-amber-400', badge: 'bg-amber-500/20 text-amber-300', icon: 'text-amber-500/30' };
+                case 'demo': return { border: 'border-purple-500/40', bg: 'bg-purple-500/5', text: 'text-purple-400', badge: 'bg-purple-500/20 text-purple-300', icon: 'text-purple-500/30' };
+                case 'alpha': return { border: 'border-orange-500/40', bg: 'bg-orange-500/5', text: 'text-orange-400', badge: 'bg-orange-500/20 text-orange-300', icon: 'text-orange-500/30' };
+                default: return { border: 'border-white/10', bg: 'bg-white/5', text: 'text-white/60', badge: 'bg-white/10 text-white/40', icon: 'text-white/10' };
+              }
+            };
+            const colors = getColorScheme(log.type);
 
-              {log.type === 'current' && (
-                <Zap className="absolute top-4 right-4 w-5 h-5 text-emerald-500/20 group-hover:text-emerald-500/50 transition-colors" />
-              )}
-            </motion.div>
-          ))}
+            return (
+              <motion.div
+                key={log.version}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className={`p-6 border-l-2 transition-all duration-500 hover:bg-white/5 relative group ${colors.bg} ${colors.border}`}
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-4">
+                    <span className={`text-[10px] font-black px-3 py-1 rounded-sm tracking-wider uppercase ${colors.badge}`}>
+                      {log.version}
+                    </span>
+                    <div className="flex items-center gap-2 text-white/40 text-[10px] tracking-widest uppercase">
+                      <Calendar className="w-3 h-3" />
+                      {log.date.includes('logs.') ? t(log.date) : log.date}
+                    </div>
+                  </div>
+                  <h3 className={`text-xl font-bold tracking-[0.3em] transition-colors ${colors.text} group-hover:brightness-125`}>
+                    {log.title}
+                  </h3>
+                </div>
+                
+                <div className="text-white/60 text-sm leading-relaxed max-w-3xl border-l border-white/5 pl-4 ml-1">
+                  {log.content}
+                </div>
+
+                <div className={`absolute top-4 right-4 w-5 h-5 opacity-20 group-hover:opacity-50 transition-colors ${colors.icon}`}>
+                  <Zap className="w-full h-full" />
+                </div>
+              </motion.div>
+            );
+          })}
         </main>
 
         <footer className="mt-8 shrink-0 flex items-center justify-between py-4 border-t border-white/5">
            <div className="text-[10px] text-white/20 uppercase tracking-[0.4em]">
-             Authorized_Access_Only [v0.1.7]
+             Authorized_Access_Only [v0.1.8]
            </div>
            <button onClick={closeModal} className="px-8 py-2 border border-white/10 hover:border-white/40 text-[10px] uppercase tracking-[0.6em] transition-all">
              {t('logs.btn_close')}
