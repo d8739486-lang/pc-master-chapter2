@@ -82,7 +82,7 @@ export const PostHackSequence = () => {
         const typingAudio = new Audio(typingSfx);
         typingAudio.loop = true;
         typingAudio.volume = 0.3;
-        let activeDangerAudio: HTMLAudioElement | null = null;
+        
         setChatMessages([]);
         for (const line of CHAT_DD) {
           if (isCancelled) return;
@@ -95,19 +95,19 @@ export const PostHackSequence = () => {
           if (isCancelled) return;
           setTypingIndicator(null);
           setChatMessages(prev => [...prev, { id: msgId++, author: line.author, avatar: line.avatar, text: line.text, isThreat: line.isThreat }]);
+          
           if (line.isThreat) {
-            if (!activeDangerAudio || activeDangerAudio.ended) {
-              activeDangerAudio = new Audio(dangerSfx);
-              activeDangerAudio.volume = 0.4;
-              activeDangerAudio.play().catch(() => {});
-            }
+            audioManager.dangerStart(500);
           }
         }
         await new Promise(r => setTimeout(r, 3000));
         if (!isCancelled) setPhase(2);
       };
       runDDSequence();
-      return () => { isCancelled = true; };
+      return () => { 
+        isCancelled = true; 
+        audioManager.dangerStop(); // Global cleanup for this component
+      };
     }
     if (phase === 2) {
       setChatMessages([]);

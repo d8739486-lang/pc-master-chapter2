@@ -131,7 +131,6 @@ export default function App() {
           )}
         </AnimatePresence>
       </div>
-      {/* Friend chat overlay (above game, below modals) */}
       <FriendChat />
       <ModalManager />
     </>

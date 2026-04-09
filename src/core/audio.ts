@@ -42,6 +42,26 @@ import elPICKSfx from '@/textures/sfx/main/elPICK.mp3';
 // @ts-ignore
 import elDROPSfx from '@/textures/sfx/main/elDROP.mp3';
 
+// --- Defense Game SFX ---
+// @ts-ignore
+import weap1Sfx from '@/textures/sfx/defend game/1_shoot.mp3';
+// @ts-ignore
+import weap2Sfx from '@/textures/sfx/defend game/2_shoot.mp3';
+// @ts-ignore
+import weap3Sfx from '@/textures/sfx/defend game/3_shoot.mp3';
+// @ts-ignore
+import weap4Sfx from '@/textures/sfx/defend game/4_shoot.mp3';
+// @ts-ignore
+import defDamageSfx from '@/textures/sfx/defend game/damage.mp3';
+// @ts-ignore
+import countdownSfx from '@/textures/sfx/defend game/countdown.mp3';
+// @ts-ignore
+import spawnSfx from '@/textures/sfx/defend game/spawn.mp3';
+// @ts-ignore
+import buySfx from '@/textures/sfx/defend game/buy.mp3';
+// @ts-ignore
+import unbuySfx from '@/textures/sfx/defend game/unbuy.mp3';
+
 // @ts-ignore
 import menuMusic from '@/textures/soundtracks/menu.mp3';
 // @ts-ignore
@@ -102,6 +122,8 @@ export const audioManager = {
         messageSfx, cmdLSfx, cmdTSfx, loseSfx, damageSfx, 
         leverSfx, leverMSfx, completeSfx,
         elINSfx, elPICKSfx, elDROPSfx,
+        weap1Sfx, weap2Sfx, weap3Sfx, weap4Sfx, defDamageSfx, 
+        countdownSfx, spawnSfx, buySfx, unbuySfx,
         menuMusic, gameMusic, defendMusic, wthSfx
       ];
 
@@ -303,11 +325,22 @@ export const audioManager = {
   },
   destroy: () => audioManager.playSfx(deleteSfx, 1.2), 
   wth: () => audioManager.playSfx(wthSfx, 1.2),
-  unbuy: () => {
-    // Synthetic 8-bit error sound (Foolproof fallback)
-    audioManager.playSynth('sawtooth', 120, 0.3, 0.4);
-    setTimeout(() => audioManager.playSynth('sawtooth', 80, 0.2, 0.4), 100);
+  
+  // Defense Game
+  weap1: () => audioManager.playSfx(weap1Sfx, 0.32),
+  weap2: () => audioManager.playSfx(weap2Sfx, 0.5),
+  weap3: () => audioManager.playSfx(weap3Sfx, 0.6),
+  weap4: () => audioManager.playSfx(weap4Sfx, 0.5),
+  defDamage: () => {
+    if (!damagePlayed) {
+      audioManager.playSfx(defDamageSfx, 1.0);
+      damagePlayed = true;
+    }
   },
+  countdown: () => audioManager.playSfx(countdownSfx, 0.7),
+  spawn: () => audioManager.playSfx(spawnSfx, 0.6),
+  buy: () => audioManager.playSfx(buySfx, 0.6),
+  unbuy: () => audioManager.playSfx(unbuySfx, 0.6),
   lOFF: () => {
     // Heavy switch/relay sound
     audioManager.playSynth('square', 60, 0.4, 0.1);

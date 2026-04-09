@@ -156,7 +156,7 @@ export const translations = {
         "Чёрт, чувак, ты там живой?! Они врубили полную изоляцию всех своих серверов!",
         "Они отследили тебя! DIGITAL DREAMS ТЕПЕРЬ ЗНАЮТ ГДЕ ТЫ!",
         "СРОЧНО СМАТЫВАЙ ИЗ СТРАНЫ!! БРОСАЙ ВСЁ И БЕГИ, ОНИ УЖЕ ВЫЕХАЛИ ЗА ТОБОЙ!!",
-        "Я уже в машине. Еду к тебе."
+        "ЧТО? МИГОМ ВЫЕЗЖАЮ!"
       ]
     },
     defense: {
@@ -179,6 +179,12 @@ export const translations = {
       defeat_subtitle: 'Digital Dreams победили...',
       restart: '[ ПЕРЕЗАПУСК ]',
       subtitle_msg: '- Я запустил маленькие скрипты-захватчики на наш сервер для очистки мусора DD. Их нужно отбить назад!',
+      shop_title: 'АРСЕНАЛ',
+      shop_credits: 'ОЧКИ',
+      shop_owned: 'КУПЛЕНО',
+      shop_pts: 'очк.',
+      shop_closing: 'Магазин закроется через',
+      enemies_left: 'Осталось',
     },
     victory_chat: {
       mission_complete: 'МИССИЯ ЗАВЕРШЕНА',
@@ -249,7 +255,7 @@ export const translations = {
       p1_warn1: '⚠ ВНИМАНИЕ: СИСТЕМА ЗАЩИТЫ АКТИВИРОВАНА',
       p1_warn2: 'Загрузка предварительно остановлена...',
       f_msg1: 'ЧТО ЭТО ЗА ОКНО?! Так, не паникуй, я пытаюсь обойти их блокировку! Дай мне пару секунд...',
-      f_msg2: 'Чертов прокси-вирус! Это окно стерло всю нашу историю переписки...',
+      f_msg2: 'Чертов прокси-вирус! Пытался залить нашу связь, но я удержал канал!',
       f_msg3: 'Но я его уничтожил! Продолжай взлом, жми [continue] в терминале!',
       p1_resume: '>> ВМЕШАТЕЛЬСТВО ИЗВНЕ. ПРОЦЕССЫ СТАБИЛИЗИРОВАНЫ.',
       p1_ready: 'Готов к продолжению. Команда разблокирована: [continue]',
@@ -441,7 +447,7 @@ export const translations = {
         "Damn, man, you alive there?! They turned on full isolation for all their servers!",
         "They tracked you! DIGITAL DREAMS NOW KNOWS WHERE YOU ARE!",
         "LEAVE THE COUNTRY IMMEDIATELY!! DROP EVERYTHING AND RUN, THEY ALREADY LEFT FOR YOU!!",
-        "I'm already in the car. Heading to you."
+        "WHAT?! I'M ON MY WAY RIGHT NOW!"
       ]
     },
     defense: {
@@ -464,6 +470,12 @@ export const translations = {
       defeat_subtitle: 'Digital Dreams won...',
       restart: '[ RESTART ]',
       subtitle_msg: '- I threw small invader scripts onto our server to clean up DD junk. You need to repel them!',
+      shop_title: 'ARSENAL',
+      shop_credits: 'SCORE',
+      shop_owned: 'OWNED',
+      shop_pts: 'pts',
+      shop_closing: 'Shop closing in',
+      enemies_left: 'Remaining',
     },
     victory_chat: {
       mission_complete: 'MISSION COMPLETE',
@@ -534,7 +546,7 @@ export const translations = {
       p1_warn1: '⚠ WARNING: DEFENSE SYSTEM ACTIVATED',
       p1_warn2: 'Loading temporarily halted...',
       f_msg1: 'WHAT IS THIS POPUP?! Okay, do not panic, I am trying to bypass their blockade! Give me a few seconds...',
-      f_msg2: 'Damn proxy-virus! This window wiped our entire chat history...',
+      f_msg2: 'Damn proxy-virus! It tried to flood our connection, but I held the link!',
       f_msg3: 'But I destroyed it! Continue the hack, hit [continue] in the terminal!',
       p1_resume: '>> EXTERNAL INTERFERENCE. PROCESSES STABILIZED.',
       p1_ready: 'Ready to proceed. Command unlocked: [continue]',

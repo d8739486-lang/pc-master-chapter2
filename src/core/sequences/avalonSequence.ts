@@ -92,7 +92,6 @@ export const startAvalonPart1 = (
         setBlur(false); // REMOVE BLUR IMMEDIATELY AS REQUESTED
         
         const chatStore = useChatStore.getState();
-        chatStore.resetAll(); // WIPE HISTORY as requested
         chatStore.setActiveChat('friend');
         
         chatStore.addMessage({

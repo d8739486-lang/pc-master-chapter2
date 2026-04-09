@@ -11,8 +11,24 @@ export const UpdateLogsModal = memo(() => {
 
 const LOGS = language === 'en' ? [
   {
-    version: '0.1.8',
+    version: '0.2.0',
     date: 'logs.current_version',
+    title: 'COMBAT OVERHAUL',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> 3 new enemy types: SHIELD (armor), STEALTH (invisible), SPLITTER (splits on death).</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> 4-slot weapon inventory with keyboard switching (keys 1-2-3-4).</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Between-wave weapon shop: SHOTGUN, SNIPER, MINIGUN.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Rock-paper-scissors effectiveness system (strong/weak matchups).</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Hit markers showing CRIT / HIT / WEAK feedback on attacks.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed chat history being wiped during Avalon sequence.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.1.8',
+    date: '2026-04-09',
     title: 'POLISH & REFINEMENT',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -22,7 +38,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed plot progression blocker related to [start_operation] command.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.1.7',
@@ -155,8 +171,24 @@ const LOGS = language === 'en' ? [
   }
 ] : [
   {
-    version: '0.1.8',
+    version: '0.2.0',
     date: 'logs.current_version',
+    title: 'БОЕВАЯ СИСТЕМА',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> 3 новых типа врагов: SHIELD (броня), STEALTH (невидимка), SPLITTER (делится при смерти).</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Инвентарь на 4 слота с переключением на клавиши 1-2-3-4.</li>
+            <li><span className="text-emerald-400 font-bold mr-2 text-xs border border-emerald-400/30 px-1 pt-0.5 rounded-[2px] bg-emerald-500/10">[+]</span> Магазин оружия между волнами: SHOTGUN, SNIPER, MINIGUN.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Система эффективности оружия (сильно/слабо против определённых врагов).</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Маркеры попаданий: CRIT / HIT / WEAK при атаке.</li>
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлен баг очистки истории чата во время секвенции Avalon.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.1.8',
+    date: '2026-04-09',
     title: 'ПОЛИРОВКА И УЛУЧШЕНИЯ СЮЖЕТА',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -166,7 +198,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлен критический баг не позволяющий продолжить сюжет после команды start_operation.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.1.7',

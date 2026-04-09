@@ -8,7 +8,53 @@ import { TimelineEngine } from '@/core/TimelineEngine';
 import { audioManager } from '@/core/audio';
 import { useI18n } from '@/core/i18n';
 import { TerminalTaskOverlay } from './Tasks/TerminalTaskOverlay';
+import { ITerminalLine } from '@/core/store';
 
+const TerminalLine = ({ 
+  line, 
+  executeCommand, 
+  isTyping,
+  className = ""
+}: { 
+  line: ITerminalLine, 
+  executeCommand: (cmd: string) => void, 
+  isTyping: boolean,
+  className?: string
+}) => {
+  useEffect(() => {
+    audioManager.cmdT();
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -25, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+      transition={{ 
+        type: 'spring', 
+        stiffness: 280, 
+        damping: 24,
+        mass: 0.6
+      }}
+      className={`flex gap-3 whitespace-pre-wrap wrap-break-word leading-loose py-1
+        ${line.type === 'input' ? 'text-emerald-400 font-bold' : ''}
+        ${line.type === 'output' ? 'text-white font-medium' : ''}
+        ${line.type === 'error' ? 'text-red-500 font-bold' : ''}
+        ${line.type === 'success' ? 'text-white font-bold' : ''}
+        ${line.type === 'system' ? 'text-zinc-300 italic font-medium' : ''}
+        ${className}
+      `}
+    >
+      <div className="flex-1 align-middle pt-1">
+        {line.type === 'input' && <span className="opacity-40 mr-2 uppercase tracking-wider text-xs">»</span>}
+        <TerminalLineParser 
+          text={line.content} 
+          onCommandClick={executeCommand} 
+          disabled={isTyping} 
+        />
+      </div>
+    </motion.div>
+  );
+};
 
 export const Terminal = () => {
   const { terminalHistory, currentPath } = useGameStore();
@@ -26,11 +72,6 @@ export const Terminal = () => {
   const lastHistoryCount = useRef(terminalHistory.length);
 
   useEffect(() => {
-    if (terminalHistory.length > lastHistoryCount.current) {
-        audioManager.cmdT();
-    }
-    lastHistoryCount.current = terminalHistory.length;
-    
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
@@ -106,48 +147,26 @@ export const Terminal = () => {
              <div className="flex flex-col gap-4">
                {/* Dynamic rendering of lines */}
                <AnimatePresence initial={false}>
-                  {terminalHistory.map((line, i) => {
-                    return (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className={`flex gap-3 whitespace-pre-wrap wrap-break-word leading-loose py-1
-                          ${line.type === 'input' ? 'text-emerald-400 font-bold' : ''}
-                          ${line.type === 'output' ? 'text-white font-medium' : ''}
-                          ${line.type === 'error' ? 'text-red-500 font-bold' : ''}
-                          ${line.type === 'success' ? 'text-white font-bold' : ''}
-                          ${line.type === 'system' ? 'text-zinc-300 italic font-medium' : ''}
-                        `}
-                      >
-                        <div className="flex-1 align-middle pt-1">
-                          {line.type === 'input' && <span className="opacity-40 mr-2 uppercase tracking-wider text-xs">»</span>}
-                          {/* Parse line content for interactive commands */}
-                          <TerminalLineParser 
-                            text={line.content} 
-                            onCommandClick={executeCommand} 
-                            disabled={isTyping} 
-                          />
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                  {terminalHistory.map((line, i) => (
+                    <TerminalLine 
+                      key={i} 
+                      line={line} 
+                      executeCommand={executeCommand} 
+                      isTyping={isTyping} 
+                    />
+                  ))}
                </AnimatePresence>
              </div>
              
              {renderProgressBar()}
 
              {escapeTimer !== null && (
-               <motion.div
-                 initial={{ opacity: 0, x: -10 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 className="flex gap-3 whitespace-pre-wrap wrap-break-word leading-relaxed py-0.5 text-red-500 font-black animate-pulse mt-4 border-l-2 border-red-500/50 pl-4 bg-red-950/5 font-mono"
-               >
-                 <div className="flex-1 align-middle pt-1">
-                   <span className="opacity-40 mr-2 uppercase tracking-wider text-xs">»</span>
-                   {t('terminal.countdown', { time: escapeTimer })}
-                 </div>
-               </motion.div>
+               <TerminalLine 
+                 line={{ type: 'error', content: t('terminal.countdown', { time: escapeTimer }) }}
+                 executeCommand={executeCommand}
+                 isTyping={isTyping}
+                 className="animate-pulse mt-4 border-l-2 border-red-500/50 pl-4 bg-red-950/5 font-black font-mono"
+               />
              )}
            </div>
         </div>

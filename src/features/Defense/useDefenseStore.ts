@@ -1,6 +1,44 @@
 import { create } from 'zustand';
 import { audioManager } from '@/core/audio';
 
+// ─── Enemy Types ───────────────────────────────────────────────
+export type EnemyType = 'DRONE' | 'SHIELD' | 'STEALTH' | 'SPLITTER' | 'MINI';
+
+// ─── Weapon Types ──────────────────────────────────────────────
+export type WeaponType = 'PISTOL' | 'SHOTGUN' | 'SNIPER' | 'MINIGUN';
+
+/** Weapon effectiveness matrix: weapon → enemy → multiplier */
+export const WEAPON_EFFECTIVENESS: Record<WeaponType, Record<EnemyType, number>> = {
+  PISTOL:   { DRONE: 2,   SHIELD: 0.05, STEALTH: 0.05, SPLITTER: 0.05, MINI: 1.5 },
+  SHOTGUN:  { DRONE: 0.1, SHIELD: 3,    STEALTH: 0.1,  SPLITTER: 0.1,  MINI: 0.1 },
+  SNIPER:   { DRONE: 0.1, SHIELD: 0.1,  STEALTH: 3,    SPLITTER: 0.1,  MINI: 0.1 },
+  MINIGUN:  { DRONE: 0.1, SHIELD: 0.1,  STEALTH: 0.1,  SPLITTER: 3,    MINI: 2   },
+};
+
+/** Weapon shop config */
+export interface IWeaponConfig {
+  type: WeaponType;
+  cost: number;
+  icon: string;
+}
+
+export const WEAPON_SHOP: IWeaponConfig[] = [
+  { type: 'SHOTGUN', cost: 50,  icon: '💥' },
+  { type: 'SNIPER',  cost: 75,  icon: '🔭' },
+  { type: 'MINIGUN', cost: 100, icon: '🔥' },
+];
+
+/** Points awarded per enemy type kill */
+export const KILL_POINTS: Record<EnemyType, number> = {
+  DRONE: 10,
+  SHIELD: 20,
+  STEALTH: 25,
+  SPLITTER: 30,
+  MINI: 5,
+};
+
+// ─── Interfaces ────────────────────────────────────────────────
+
 export interface ISector {
   id: number;
   name: string;
@@ -18,6 +56,12 @@ export interface IAttack {
   size: number;
   /** 0-1 progress toward its target sector */
   progress: number;
+  /** Enemy type for visual/mechanic differentiation */
+  type: EnemyType;
+  /** Shield HP (only for SHIELD type, starts at 1) */
+  shieldHp: number;
+  /** Fractional HP for weak-weapon hits */
+  hp: number;
 }
 
 export interface IBossAttack {
@@ -48,6 +92,13 @@ interface IDefenseState {
   attackIdCounter: number;
   totalKills: number;
 
+  /** Weapon inventory: 4 slots, null = empty */
+  inventory: (WeaponType | null)[];
+  /** Currently active inventory slot (0-3) */
+  activeSlot: number;
+  /** Whether shop overlay is visible */
+  showShop: boolean;
+
   setPhase: (phase: DefensePhase) => void;
   setWave: (wave: number) => void;
   setEnemiesTotal: (n: number) => void;
@@ -69,6 +120,13 @@ interface IDefenseState {
   clearAllAttacks: () => void;
   addKill: () => void;
   resetDefense: () => void;
+
+  /** Inventory actions */
+  setActiveSlot: (slot: number) => void;
+  buyWeapon: (weaponType: WeaponType, cost: number) => boolean;
+  setShowShop: (v: boolean) => void;
+  /** Get the currently equipped weapon type */
+  getActiveWeapon: () => WeaponType;
 }
 
 const INITIAL_SECTORS: ISector[] = [
@@ -82,6 +140,15 @@ export const WAVE_SECTOR_MAP: Record<number, number[]> = {
   3: [1],
   4: [1],
   5: [1],
+};
+
+/** Enemy type distribution per wave */
+export const WAVE_ENEMY_TYPES: Record<number, EnemyType[]> = {
+  1: ['DRONE'],
+  2: ['DRONE', 'DRONE', 'SHIELD'],
+  3: ['DRONE', 'SHIELD', 'STEALTH'],
+  4: ['DRONE', 'SHIELD', 'STEALTH', 'SPLITTER'],
+  5: ['DRONE', 'SHIELD', 'STEALTH', 'SPLITTER', 'SPLITTER'],
 };
 
 /** Wave config: spawnInterval (ms), attackCount, attackSpeed, combatDuration (s) */
@@ -102,13 +169,17 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
   prepCountdown: 3,
   sectors: INITIAL_SECTORS.map(s => ({ ...s })),
   attacks: [],
-  bossHp: 100,
-  bossMaxHp: 100,
+  bossHp: 40,
+  bossMaxHp: 40,
   bossAttacks: [],
   bossVulnerable: false,
   vulnTimer: 0,
   attackIdCounter: 0,
   totalKills: 0,
+
+  inventory: ['PISTOL', null, null, null],
+  activeSlot: 0,
+  showShop: false,
 
   setPhase: (phase) => set({ phase }),
   setWave: (wave) => set({ wave }),
@@ -123,7 +194,6 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
       sec.id === sectorId ? { ...sec, hp: Math.max(0, sec.hp - dmg) } : sec
     );
     const anyDead = sectors.some(sec => sec.active && sec.hp <= 0);
-    // When sector takes damage from an attack reaching it, that enemy is "resolved"
     const isCombat = s.phase === 'combat';
     return { 
       sectors, 
@@ -145,14 +215,12 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
   advanceAttacks: (dt) => {
     const state = get();
     const updated: IAttack[] = [];
-    const toRemove: number[] = [];
 
     for (const atk of state.attacks) {
       const newProgress = atk.progress + atk.speed * dt;
       if (newProgress >= 1) {
         // Attack reached sector
-        toRemove.push(atk.id);
-        audioManager.damage();
+        audioManager.defDamage();
         state.damageSector(atk.targetSectorId, 12);
       } else {
         updated.push({ ...atk, progress: newProgress });
@@ -186,6 +254,41 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
   clearAllAttacks: () => set({ attacks: [], bossAttacks: [] }),
   addKill: () => set(s => ({ totalKills: s.totalKills + 1 })),
 
+  // ─── Inventory ──────────────────────────────────────────
+  setActiveSlot: (slot) => {
+    const inv = get().inventory;
+    if (slot >= 0 && slot < 4 && inv[slot] !== null) {
+      set({ activeSlot: slot });
+    }
+  },
+
+  buyWeapon: (weaponType, cost) => {
+    const state = get();
+    if (state.score < cost) return false;
+
+    // Check if already owned
+    if (state.inventory.includes(weaponType)) return false;
+
+    // Find first empty slot
+    const emptyIdx = state.inventory.indexOf(null);
+    if (emptyIdx === -1) return false;
+
+    const newInventory = [...state.inventory];
+    newInventory[emptyIdx] = weaponType;
+    set({ 
+      inventory: newInventory, 
+      score: state.score - cost 
+    });
+    return true;
+  },
+
+  setShowShop: (showShop) => set({ showShop }),
+
+  getActiveWeapon: () => {
+    const state = get();
+    return state.inventory[state.activeSlot] ?? 'PISTOL';
+  },
+
   resetDefense: () => set({
     phase: 'intro',
     wave: 0,
@@ -195,12 +298,15 @@ export const useDefenseStore = create<IDefenseState>((set, get) => ({
     prepCountdown: 3,
     sectors: INITIAL_SECTORS.map(s => ({ ...s })),
     attacks: [],
-    bossHp: 100,
-    bossMaxHp: 100,
+    bossHp: 40,
+    bossMaxHp: 40,
     bossAttacks: [],
     bossVulnerable: false,
     vulnTimer: 0,
     attackIdCounter: 0,
     totalKills: 0,
+    inventory: ['PISTOL', null, null, null],
+    activeSlot: 0,
+    showShop: false,
   }),
 }));
