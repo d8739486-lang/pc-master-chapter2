@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, Screen } from '@/core/store';
 import { useI18n } from '@/core/i18n';
 import { SkipButton } from '@/components/SkipButton';
+import { audioManager } from '@/core/audio';
 
 // Avatars
 // @ts-ignore
@@ -47,9 +48,7 @@ export const VictoryChat = () => {
 
   useEffect(() => {
     if (chatMessages.length > prevMsgCountRef.current) {
-      const sfx = new Audio(messageSfx);
-      sfx.volume = 0.3;
-      sfx.play().catch(() => {});
+      audioManager.playSfx(messageSfx, 0.3);
     }
     prevMsgCountRef.current = chatMessages.length;
   }, [chatMessages.length]);
@@ -59,19 +58,15 @@ export const VictoryChat = () => {
 
     const runSequence = async () => {
       let msgId = 0;
-      const typingAudio = new Audio(typingSfx);
-      typingAudio.loop = true;
-      typingAudio.volume = 0.3;
-
       for (const line of VICTORY_SCRIPT) {
         if (isCancelled) return;
         await new Promise(r => setTimeout(r, line.waitBefore));
         if (isCancelled) return;
         setTypingIndicator(line.author === t('story.me') ? t('story.sending') : t('story.typing', { name: line.author }));
 
-        typingAudio.play().catch(() => {});
+        audioManager.playLoop(typingSfx, 'vic_typing', 0.3);
         await new Promise(r => setTimeout(r, line.typingTime));
-        typingAudio.pause();
+        audioManager.stopLoop('vic_typing');
 
         if (isCancelled) return;
         setTypingIndicator(null);

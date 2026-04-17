@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useGameStore } from '@/core/store';
 import { useI18n } from '@/core/i18n';
+import { audioManager } from '@/core/audio';
 import { FastForward } from 'lucide-react';
 
 interface SkipButtonProps {
@@ -15,6 +16,11 @@ export const SkipButton = ({ onSkip, className = "" }: SkipButtonProps) => {
   const { hasCompleted } = useGameStore();
   const { t } = useI18n();
 
+  const handleSkip = () => {
+    audioManager.stopAll();
+    onSkip();
+  };
+
   if (!hasCompleted) return null;
 
   return (
@@ -23,7 +29,7 @@ export const SkipButton = ({ onSkip, className = "" }: SkipButtonProps) => {
       animate={{ opacity: 1, x: 0 }}
       whileHover={{ scale: 1.05, backgroundColor: 'rgba(16, 185, 129, 0.1)' }}
       whileTap={{ scale: 0.95 }}
-      onClick={onSkip}
+      onClick={handleSkip}
       className={`fixed bottom-8 right-8 z-100 flex items-center gap-3 px-6 py-3 
                  bg-black/40 backdrop-blur-md border border-emerald-500/30 rounded-lg 
                  text-emerald-400 font-mono text-xs tracking-[0.2em] shadow-[0_0_20px_rgba(16,185,129,0.1)]

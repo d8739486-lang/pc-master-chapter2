@@ -73,11 +73,8 @@ export const GameView = () => {
 
   useEffect(() => {
     if (isGameOver) {
-      const timer = setTimeout(() => {
-        setShowLoseContent(true);
-        audioManager.lose();
-      }, 2000);
-      return () => clearTimeout(timer);
+      setShowLoseContent(true);
+      audioManager.lose();
     } else {
       setShowLoseContent(false);
     }
@@ -91,7 +88,6 @@ export const GameView = () => {
     audioManager.stopAllLoops();
     audioManager.stopMusic();
     audioManager.cmdT();
-    window.location.reload(); // Hard reset to be 100% sure everything is 'point 0'
   };
 
   return (

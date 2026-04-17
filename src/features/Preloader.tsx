@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useGameStore, Screen } from '@/core/store';
 import { useI18n } from '@/core/i18n';
 import { AssetManager } from '@/core/AssetManager';
+import { audioCtx } from '@/core/audio';
 
 export const Preloader = () => {
   const { setScreen } = useGameStore();
@@ -45,6 +46,9 @@ export const Preloader = () => {
   }, [setScreen, hasInteracted]);
 
   const handleInitialInteraction = () => {
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().catch(() => {
         console.warn("Fullscreen blocked by browser policy.");

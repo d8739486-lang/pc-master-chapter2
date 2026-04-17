@@ -17,8 +17,6 @@ import messageSfx from '@/textures/sfx/menu cutscene/message.mp3';
 // @ts-ignore
 import typingSfx from '@/textures/sfx/menu cutscene/typing.mp3';
 // @ts-ignore
-import dangerSfx from '@/textures/sfx/main/danger.mp3';
-// @ts-ignore
 import carSfx from '@/textures/sfx/main/car.mp3';
 
 interface ChatMessage {
@@ -67,9 +65,7 @@ export const PostHackSequence = () => {
 
   useEffect(() => {
     if (chatMessages.length > prevMsgCountRef.current && (phase === 1 || phase === 3)) {
-      const sfx = new Audio(messageSfx);
-      sfx.volume = 0.3;
-      sfx.play().catch(() => { });
+      audioManager.playSfx(messageSfx, 0.3);
     }
     prevMsgCountRef.current = chatMessages.length;
   }, [chatMessages.length, phase]);
@@ -79,27 +75,23 @@ export const PostHackSequence = () => {
       let isCancelled = false;
       const runDDSequence = async () => {
         let msgId = 0;
-        const typingAudio = new Audio(typingSfx);
-        typingAudio.loop = true;
-        typingAudio.volume = 0.3;
-        
         setChatMessages([]);
         for (const line of CHAT_DD) {
-          if (isCancelled) return;
-          await new Promise(r => setTimeout(r, line.waitBefore));
-          if (isCancelled) return;
-          setTypingIndicator(t('story.typing', { name: line.author }));
-          typingAudio.play().catch(() => { });
-          await new Promise(r => setTimeout(r, line.typingTime));
-          typingAudio.pause();
-          if (isCancelled) return;
-          setTypingIndicator(null);
-          setChatMessages(prev => [...prev, { id: msgId++, author: line.author, avatar: line.avatar, text: line.text, isThreat: line.isThreat }]);
-          
-          if (line.isThreat) {
-            audioManager.dangerStart(500);
-          }
+        if (isCancelled) return;
+        await new Promise(r => setTimeout(r, line.waitBefore));
+        if (isCancelled) return;
+        setTypingIndicator(t('story.typing', { name: line.author }));
+        audioManager.playLoop(typingSfx, 'dd_typing', 0.3);
+        await new Promise(r => setTimeout(r, line.typingTime));
+        audioManager.stopLoop('dd_typing');
+        if (isCancelled) return;
+        setTypingIndicator(null);
+        setChatMessages(prev => [...prev, { id: msgId++, author: line.author, avatar: line.avatar, text: line.text, isThreat: line.isThreat }]);
+        
+        if (line.isThreat) {
+          audioManager.dangerStart(500);
         }
+      }
         await new Promise(r => setTimeout(r, 3000));
         if (!isCancelled) setPhase(2);
       };
@@ -118,21 +110,18 @@ export const PostHackSequence = () => {
       let isCancelled = false;
       const runFriendSequence = async () => {
         let msgId = 100;
-        const typingAudio = new Audio(typingSfx);
-        typingAudio.loop = true;
-        typingAudio.volume = 0.3;
         for (const line of CHAT_FRIEND) {
-          if (isCancelled) return;
-          await new Promise(r => setTimeout(r, line.waitBefore));
-          if (isCancelled) return;
-          setTypingIndicator(line.author === t('story.me') ? t('story.sending') : t('story.typing', { name: line.author }));
-          typingAudio.play().catch(() => { });
-          await new Promise(r => setTimeout(r, line.typingTime));
-          typingAudio.pause();
-          if (isCancelled) return;
-          setTypingIndicator(null);
-          setChatMessages(prev => [...prev, { id: msgId++, author: line.author, avatar: line.avatar, text: line.text }]);
-        }
+        if (isCancelled) return;
+        await new Promise(r => setTimeout(r, line.waitBefore));
+        if (isCancelled) return;
+        setTypingIndicator(line.author === t('story.me') ? t('story.sending') : t('story.typing', { name: line.author }));
+        audioManager.playLoop(typingSfx, 'friend_typing', 0.3);
+        await new Promise(r => setTimeout(r, line.typingTime));
+        audioManager.stopLoop('friend_typing');
+        if (isCancelled) return;
+        setTypingIndicator(null);
+        setChatMessages(prev => [...prev, { id: msgId++, author: line.author, avatar: line.avatar, text: line.text }]);
+      }
         await new Promise(r => setTimeout(r, 3000));
         if (!isCancelled) setPhase(4);
       };
@@ -140,16 +129,14 @@ export const PostHackSequence = () => {
       return () => { isCancelled = true; };
     }
     if (phase === 4) {
-      const carAudio = new Audio(carSfx);
-      carAudio.volume = 0.5;
-      carAudio.play().catch(() => { });
+      audioManager.playLoop(carSfx, 'car_engine', 0.5);
       const controls = animate(speedValue, [120, 260, 180], { duration: 2.5, repeat: Infinity, ease: "easeInOut", times: [0, 0.8, 1] });
       const timer = setTimeout(() => {
-        carAudio.pause();
+        audioManager.stopLoop('car_engine');
         controls.stop();
         setPhase(5);
       }, 5000);
-      return () => { clearTimeout(timer); carAudio.pause(); controls.stop(); };
+      return () => { clearTimeout(timer); audioManager.stopLoop('car_engine'); controls.stop(); };
     }
     if (phase === 5) {
       const timer = setTimeout(() => { setScreen(Screen.DEFENSE_GAME); }, 2000);

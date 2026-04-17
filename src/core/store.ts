@@ -140,9 +140,10 @@ export const useGameStore = create<GameState>((set) => ({
   closeFriendChat: () => set({ friendChatOpen: false }),
   doEvolve: () => set((state) => ({ evolution: Math.min(state.evolution + 1, 3) })),
 
-  language: null,
+  language: (localStorage.getItem('pc_master_lang') as 'en' | 'ru') || null,
   setLanguage: (language) => {
     (window as unknown as Record<string, unknown>).__LANG__ = language;
+    localStorage.setItem('pc_master_lang', language);
     set({ 
       language,
       terminalHistory: [

@@ -32,9 +32,7 @@ export const EndingSequence = () => {
     const timers = [
       setTimeout(() => {
         setPhase(1);
-        const win = new Audio(winSfx);
-        win.volume = 0.6;
-        win.play().catch(() => {});
+        audioManager.playSfx(winSfx, 0.6);
       }, 500),
       setTimeout(() => {
         setPhase(2);
@@ -155,6 +153,12 @@ export const EndingSequence = () => {
       {/* Cinematic Overlays */}
       <div className="absolute inset-0 pointer-events-none border-100 border-black/20 z-50 mix-blend-multiply" />
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(transparent_0%,rgba(0,0,0,0.4)_100%)] z-40" />
+      
+      <SkipButton onSkip={() => { 
+        audioManager.stopAll(); 
+        resetGame(); 
+        setScreen(Screen.START); 
+      }} />
     </div>
   );
 };

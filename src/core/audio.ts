@@ -42,6 +42,20 @@ import elPICKSfx from '@/textures/sfx/main/elPICK.mp3';
 // @ts-ignore
 import elDROPSfx from '@/textures/sfx/main/elDROP.mp3';
 
+// --- Cutscene SFX (Added for v0.2.1) ---
+// @ts-ignore
+import chaosSfx from '@/textures/sfx/menu cutscene/chaos.mp3';
+// @ts-ignore
+import fadeSfx from '@/textures/sfx/menu cutscene/fade.mp3';
+// @ts-ignore
+import messageCutsceneSfx from '@/textures/sfx/menu cutscene/message.mp3';
+// @ts-ignore
+import textSfx from '@/textures/sfx/menu cutscene/text.mp3';
+// @ts-ignore
+import typingSfx from '@/textures/sfx/menu cutscene/typing.mp3';
+// @ts-ignore
+import carSfx from '@/textures/sfx/main/car.mp3';
+
 // --- Defense Game SFX ---
 // @ts-ignore
 import weap1Sfx from '@/textures/sfx/defend game/1_shoot.mp3';
@@ -83,6 +97,7 @@ let currentMusicSource: AudioBufferSourceNode | null = null;
 let currentMusicPath: string | null = null;
 let currentAmbientSource: AudioBufferSourceNode | null = null;
 const activeLoops: Map<string, { source: AudioBufferSourceNode, gain: GainNode }> = new Map();
+const activeSfxSources: Set<AudioBufferSourceNode> = new Set();
 
 let fadeOutTimeout: number | null = null;
 
@@ -124,7 +139,9 @@ export const audioManager = {
         elINSfx, elPICKSfx, elDROPSfx,
         weap1Sfx, weap2Sfx, weap3Sfx, weap4Sfx, defDamageSfx, 
         countdownSfx, spawnSfx, buySfx, unbuySfx,
-        menuMusic, gameMusic, defendMusic, wthSfx
+        menuMusic, gameMusic, defendMusic, wthSfx,
+        // Cutscene specific SFX
+        chaosSfx, fadeSfx, messageCutsceneSfx, textSfx, typingSfx, carSfx
       ];
 
       let loaded = 0;
@@ -154,10 +171,23 @@ export const audioManager = {
     }
   },
 
-  playSfx: (path: string, volumeScale: number = 1) => {
+  playSfx: async (path: string, volumeScale: number = 1) => {
     if (!audioCtx || !sfxGain) return null;
-    const buffer = audioBuffers.get(path);
-    if (!buffer) return null;
+    
+    let buffer = audioBuffers.get(path);
+    
+    // Defensive: Load on the fly if not preloaded
+    if (!buffer) {
+      try {
+        const response = await fetch(path);
+        const arrayBuffer = await response.arrayBuffer();
+        buffer = await audioCtx.decodeAudioData(arrayBuffer);
+        audioBuffers.set(path, buffer);
+      } catch (e) {
+        console.error(`Failed to play SFX on the fly: ${path}`, e);
+        return null;
+      }
+    }
 
     const source = audioCtx.createBufferSource();
     source.buffer = buffer;
@@ -171,11 +201,16 @@ export const audioManager = {
       source.connect(sfxGain);
     }
     
+    source.onended = () => {
+      activeSfxSources.delete(source);
+    };
+    activeSfxSources.add(source);
+    
     source.start();
     return source;
   },
 
-  playMusic: (path: string, loop: boolean = true) => {
+  playMusic: async (path: string, loop: boolean = true) => {
     if (!audioCtx || !musicGain) return;
     
     if (currentMusicPath === path && currentMusicSource) return;
@@ -184,8 +219,18 @@ export const audioManager = {
       try { currentMusicSource.stop(); currentMusicSource.disconnect(); } catch (e) {}
     }
 
-    const buffer = audioBuffers.get(path);
-    if (!buffer) return;
+    let buffer = audioBuffers.get(path);
+    if (!buffer) {
+       try {
+        const response = await fetch(path);
+        const arrayBuffer = await response.arrayBuffer();
+        buffer = await audioCtx.decodeAudioData(arrayBuffer);
+        audioBuffers.set(path, buffer);
+      } catch (e) {
+        console.error(`Failed to play Music on the fly: ${path}`, e);
+        return;
+      }
+    }
 
     const source = audioCtx.createBufferSource();
     source.buffer = buffer;
@@ -212,12 +257,22 @@ export const audioManager = {
     };
   },
 
-  playLoop: (path: string, key: string, volumeScale: number = 1, fadeInMs: number = 0) => {
+  playLoop: async (path: string, key: string, volumeScale: number = 1, fadeInMs: number = 0) => {
     if (!audioCtx || !sfxGain) return;
     audioManager.stopLoop(key);
 
-    const buffer = audioBuffers.get(path);
-    if (!buffer) return;
+    let buffer = audioBuffers.get(path);
+    if (!buffer) {
+       try {
+        const response = await fetch(path);
+        const arrayBuffer = await response.arrayBuffer();
+        buffer = await audioCtx.decodeAudioData(arrayBuffer);
+        audioBuffers.set(path, buffer);
+      } catch (e) {
+        console.error(`Failed to play Loop on the fly: ${path}`, e);
+        return;
+      }
+    }
 
     const source = audioCtx.createBufferSource();
     source.buffer = buffer;
@@ -374,6 +429,13 @@ export const audioManager = {
   stopAll: () => {
     audioManager.stopMusic();
     audioManager.stopAllLoops();
+    
+    // Stop all active one-off SFX
+    activeSfxSources.forEach(source => {
+      try { source.stop(); source.disconnect(); } catch (e) {}
+    });
+    activeSfxSources.clear();
+
     if (currentAmbientSource) {
       try { currentAmbientSource.stop(); currentAmbientSource.disconnect(); } catch (e) {}
       currentAmbientSource = null;

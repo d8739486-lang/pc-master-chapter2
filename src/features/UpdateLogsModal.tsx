@@ -11,8 +11,21 @@ export const UpdateLogsModal = memo(() => {
 
 const LOGS = language === 'en' ? [
   {
-    version: '0.2.0',
+    version: '0.2.1',
     date: 'logs.current_version',
+    title: 'STABILITY & PERFORMANCE',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Resolved critical system errors and logic regression bugs.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Hardened audio engine for better stability during cutscenes.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Optimized state management across different game loops.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.2.0',
+    date: '2026-04-10',
     title: 'COMBAT OVERHAUL',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -24,7 +37,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Fixed chat history being wiped during Avalon sequence.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.1.8',
@@ -171,8 +184,21 @@ const LOGS = language === 'en' ? [
   }
 ] : [
   {
-    version: '0.2.0',
+    version: '0.2.1',
     date: 'logs.current_version',
+    title: 'ЖЕСТКИЙ БАГФИКС',
+    content: (
+        <ul className="list-none space-y-2 mt-2">
+            <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Устранены критические системные ошибки и регрессии логики.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Усилена стабильность аудио-движка при пропуске катсцен.</li>
+            <li><span className="text-blue-400 font-bold mr-2 text-xs border border-blue-400/30 px-1 pt-0.5 rounded-[2px] bg-blue-500/10">[*]</span> Оптимизирована работа игровых стейтов при сбросе игры.</li>
+        </ul>
+    ),
+    type: 'current'
+  },
+  {
+    version: '0.2.0',
+    date: '2026-04-10',
     title: 'БОЕВАЯ СИСТЕМА',
     content: (
         <ul className="list-none space-y-2 mt-2">
@@ -184,7 +210,7 @@ const LOGS = language === 'en' ? [
             <li><span className="text-red-400 font-bold mr-2 text-xs border border-red-400/30 px-1 pt-0.5 rounded-[2px] bg-red-500/10">[-]</span> Исправлен баг очистки истории чата во время секвенции Avalon.</li>
         </ul>
     ),
-    type: 'current'
+    type: 'previous'
   },
   {
     version: '0.1.8',
@@ -402,7 +428,7 @@ const LOGS = language === 'en' ? [
 
         <footer className="mt-8 shrink-0 flex items-center justify-between py-4 border-t border-white/5">
            <div className="text-[10px] text-white/20 uppercase tracking-[0.4em]">
-             Authorized_Access_Only [v0.1.8]
+             Authorized_Access_Only [v0.2.1]
            </div>
            <button onClick={closeModal} className="px-8 py-2 border border-white/10 hover:border-white/40 text-[10px] uppercase tracking-[0.6em] transition-all">
              {t('logs.btn_close')}

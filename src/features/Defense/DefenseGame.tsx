@@ -236,12 +236,28 @@ export const DefenseGame = () => {
   }, [setWave, setPhase, setSectors, setEnemiesTotal, setEnemiesKilled, setPrepCountdown, setShowShop, pickEnemyType]);
 
   const handleRestart = useCallback(() => {
+    // 1. Clear all active intervals/loops immediately
+    if (spawnTimerRef.current) clearInterval(spawnTimerRef.current);
+    if (bossSpawnRef.current) clearInterval(bossSpawnRef.current);
+    if (waveTimerRef.current) clearInterval(waveTimerRef.current);
+    cancelAnimationFrame(gameLoopRef.current);
+
+    // 2. Stop all audio
+    audioManager.stopAll();
+
+    // 3. Reset all sub-states to defaults
+    setParticles([]);
+    setRadialFlashes([]);
+    setHitMarkers([]);
+    setScreenShake(0);
+    setDamageFlash(false);
+
+    // 4. Reset core game state and return to menu
     resetDefense();
     const store = useGameStore.getState();
-    store.setIsRestarting(false); 
+    store.setIsRestarting(true); 
     store.resetGame();
-    setScreen(Screen.START);
-  }, [resetDefense, setScreen]);
+  }, [resetDefense]);
 
   const startBossSpawn = useCallback(() => {
     bossSpawnRef.current = setInterval(() => {
@@ -492,7 +508,7 @@ export const DefenseGame = () => {
     if (bossHp <= 1) {
       setExplosion(true);
       setTimeout(() => {
-        setScreen(Screen.ENDING);
+        setScreen(Screen.VICTORY_CHAT);
       }, 1000);
     }
   }, [phase, bossHp, damageBoss, addScore, setScreen]);
@@ -526,7 +542,11 @@ export const DefenseGame = () => {
     const cleanupMusic = audioManager.defend();
 
     return () => {
-      if (cleanupMusic) cleanupMusic();
+      if (cleanupMusic instanceof Promise) {
+        cleanupMusic.then(stop => typeof stop === 'function' && stop());
+      } else if (typeof cleanupMusic === 'function') {
+        (cleanupMusic as any)();
+      }
       cancelAnimationFrame(gameLoopRef.current);
       if (spawnTimerRef.current) clearInterval(spawnTimerRef.current);
       if (bossSpawnRef.current) clearInterval(bossSpawnRef.current);
@@ -663,7 +683,7 @@ export const DefenseGame = () => {
     }
   }, [phase, bossTimer]);
 
-  // Check boss death → Straight to Victory/Ending whiteout
+  // Check boss death → Straight to Victory Chat
   useEffect(() => {
     if ((phase === 'boss' || phase === 'boss_vulnerable') && bossHp <= 0) {
       if (bossSpawnRef.current) clearInterval(bossSpawnRef.current);
@@ -673,7 +693,7 @@ export const DefenseGame = () => {
       
       setExplosion(true);
       setTimeout(() => {
-        setScreen(Screen.ENDING);
+        setScreen(Screen.VICTORY_CHAT);
       }, 1000);
     }
   }, [bossHp, phase, setScreen, clearAllAttacks]);
@@ -1303,7 +1323,7 @@ export const DefenseGame = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-50 px-8 py-4 bg-black/90 border border-white/20 rounded-lg shadow-[0_0_30px_rgba(255,255,255,0.05)] max-w-2xl text-center pointer-events-none"
+            className="absolute bottom-32 left-1/2 -translate-x-1/2 z-50 px-8 py-4 bg-black/90 border border-white/20 rounded-lg shadow-[0_0_30px_rgba(255,255,255,0.05)] max-w-2xl text-center pointer-events-none"
           >
             <p className="text-white font-mono text-[11px] uppercase tracking-widest leading-relaxed">
               {t('defense.subtitle_msg')}

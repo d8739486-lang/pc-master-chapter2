@@ -437,8 +437,8 @@ export const StartMenu = () => {
     }, delay);
 
     return () => {
-      cleanupMenu && cleanupMenu();
-      cleanupRain && cleanupRain();
+      cleanupMenu instanceof Promise ? cleanupMenu.then(stop => typeof stop === 'function' && stop()) : (typeof cleanupMenu === 'function' && (cleanupMenu as any)());
+      cleanupRain instanceof Promise ? cleanupRain.then(stop => typeof stop === 'function' && stop()) : (typeof cleanupRain === 'function' && (cleanupRain as any)());
       clearTimeout(introStrike);
     };
   }, []);
@@ -621,7 +621,7 @@ export const StartMenu = () => {
 
       {/* Version Label */}
       <div className="absolute bottom-6 left-8 z-50 pointer-events-none">
-        <span className="text-[10px] text-white/20 font-bold uppercase tracking-[0.4em]">Current version V0.2.0</span>
+        <span className="text-[10px] text-white/20 font-bold uppercase tracking-[0.4em]">Current version V0.2.1</span>
       </div>
 
       {/* Decorative Grid Floor */}

@@ -6,6 +6,8 @@ import { MatrixRain } from '@/components/MatrixRain';
 import { useI18n, translations } from '@/core/i18n';
 import { SkipButton } from '@/components/SkipButton';
 
+import { audioManager } from '@/core/audio';
+
 // Cutscene SFX
 // @ts-ignore
 import chaosSfx from '@/textures/sfx/menu cutscene/chaos.mp3';
@@ -94,20 +96,16 @@ export const StoryIntro = () => {
 
   useEffect(() => {
     // message.mp3 plays only for normal chat lines (Phases 2 and 6)
-    // and STOPS playing when chaos (Phase 3) starts as per CutsceneLogic.md
+    // and STOPS playing when chaos (Phase 3) starts
     if (chatMessages.length > prevMsgCountRef.current && (phase === 2 || phase === 6)) {
-      const sfx = new Audio(messageSfx);
-      sfx.volume = 0.3;
-      sfx.play().catch(() => { });
+      audioManager.playSfx(messageSfx, 0.3);
     }
     prevMsgCountRef.current = chatMessages.length;
   }, [chatMessages.length, phase]);
 
   useEffect(() => {
     if (phase === 1) {
-      const sfx = new Audio(textSfx);
-      sfx.volume = 0.5;
-      sfx.play().catch(() => { });
+      audioManager.playSfx(textSfx, 0.5);
       const timer = setTimeout(() => { setPhase(2); }, 3500);
       return () => clearTimeout(timer);
     }
@@ -166,26 +164,19 @@ export const StoryIntro = () => {
       let msgId = 500;
       let currentDelay = 800;
 
-      const chaosAudio = new Audio(chaosSfx);
-      chaosAudio.volume = 0.5;
-      chaosAudio.play().catch(() => { });
+        audioManager.playLoop(chaosSfx, 'chaos', 0.5);
+        audioManager.playLoop(typingSfx, 'intro_typing', 0.4);
 
-      const typingAudio = new Audio(typingSfx);
-      typingAudio.loop = true;
-      typingAudio.volume = 0.4;
-      typingAudio.play().catch(() => { });
-
-      const spawnError = () => {
-        const elapsed = Date.now() - startTime;
-        
-        if (elapsed >= CHAOS_DURATION) {
-          if (spamIntervalRef.current) clearTimeout(spamIntervalRef.current);
-          typingAudio.pause();
-          chaosAudio.pause();
-          setSysErrors([]);
-          setPhase(4);
-          return;
-        }
+        const spawnError = () => {
+          const elapsed = Date.now() - startTime;
+          
+          if (elapsed >= CHAOS_DURATION) {
+            if (spamIntervalRef.current) clearTimeout(spamIntervalRef.current);
+            audioManager.stopAllLoops();
+            setSysErrors([]);
+            setPhase(4);
+            return;
+          }
 
         const intensity = Math.min(elapsed / CHAOS_DURATION, 1);
         setClimaxIntensity(intensity);
@@ -197,9 +188,7 @@ export const StoryIntro = () => {
 
         if (elapsed >= FADE_TRIGGER && !fadePlayed) {
           fadePlayed = true;
-          const fadeAudio = new Audio(fadeSfx);
-          fadeAudio.volume = 0.6;
-          fadeAudio.play().catch(() => { });
+          audioManager.playSfx(fadeSfx, 0.6);
         }
 
         // Exact acceleration: -100ms per step
@@ -213,8 +202,7 @@ export const StoryIntro = () => {
 
       return () => {
         if (spamIntervalRef.current) clearTimeout(spamIntervalRef.current);
-        chaosAudio.pause();
-        typingAudio.pause();
+        audioManager.stopAllLoops();
         setSysErrors([]);
       };
     }
@@ -228,9 +216,7 @@ export const StoryIntro = () => {
     if (phase === 5 && !startedPhase5Ref.current) {
       startedPhase5Ref.current = true;
       setChatMessages([]);
-      const sfx = new Audio(textSfx);
-      sfx.volume = 0.5;
-      sfx.play().catch(() => { });
+      audioManager.playSfx(textSfx, 0.5);
       // Show mid-story text for 4 seconds to let user read
       const timer = setTimeout(() => setPhase(6), 4000);
       return () => clearTimeout(timer);
